@@ -1,5 +1,6 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { Entry } from './entries';
+import { clearSongs } from './music/songStore';
 
 interface SproutpatchDB extends DBSchema {
   entries: {
@@ -57,6 +58,7 @@ export async function deleteAllData(): Promise<void> {
   const database = await db();
   const tx = database.transaction(['entries', 'settings'], 'readwrite');
   await Promise.all([tx.objectStore('entries').clear(), tx.objectStore('settings').clear(), tx.done]);
+  await clearSongs().catch(() => undefined);
 }
 
 export async function exportAllData(): Promise<{ exportedAt: string; entries: Entry[]; settings: Record<string, unknown> }> {

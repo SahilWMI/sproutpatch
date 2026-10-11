@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { TRACKS } from '../lib/music/composition';
-import { TRACK_IDS, type Prefs } from '../lib/prefs';
+import type { Prefs } from '../lib/prefs';
 import { MusicIcon } from './QuickToggles';
+import { TrackPicker } from './TrackPicker';
 import { VolumeControl } from './VolumeControl';
 
 interface MusicMenuProps {
@@ -65,22 +65,10 @@ export function MusicMenu({ prefs, onChange }: MusicMenuProps) {
           id={panelId}
           role="dialog"
           aria-label="Sound"
-          className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+4rem)] z-40 space-y-3 rounded-2xl border border-mist-200 bg-mist-50 p-4 text-mist-800 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-100"
+          className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+4rem)] z-40 max-h-[calc(100dvh-env(safe-area-inset-top)-5rem)] space-y-3 overflow-y-auto rounded-2xl border border-mist-200 bg-mist-50 p-4 text-mist-800 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-100"
         >
           <Switch label="Music" checked={prefs.musicOn} onChange={(musicOn) => onChange({ ...prefs, musicOn })} />
-          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Track">
-            {TRACK_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                aria-pressed={prefs.track === id}
-                onClick={() => onChange({ ...prefs, track: id, musicOn: true })}
-                className={`btn text-sm ${prefs.track === id && prefs.musicOn ? 'btn-primary' : 'btn-secondary'}`}
-              >
-                {TRACKS[id].title}
-              </button>
-            ))}
-          </div>
+          <TrackPicker track={prefs.track} musicOn={prefs.musicOn} onPick={(track) => onChange({ ...prefs, track, musicOn: true })} />
           <div>
             <p className="mb-1 text-sm font-medium">Volume</p>
             <VolumeControl volume={prefs.volume} onChange={(volume) => onChange({ ...prefs, volume })} />

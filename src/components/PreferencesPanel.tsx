@@ -1,5 +1,5 @@
-import { TRACKS } from '../lib/music/composition';
-import { THEME_MODES, TRACK_IDS, type Prefs, type ThemeMode } from '../lib/prefs';
+import { THEME_MODES, type Prefs, type ThemeMode } from '../lib/prefs';
+import { TrackPicker } from './TrackPicker';
 import { VolumeControl } from './VolumeControl';
 
 const THEME_OPTIONS: Record<ThemeMode, string> = {
@@ -49,30 +49,18 @@ export function PreferencesPanel({ prefs, onChange }: PreferencesPanelProps) {
             onChange={(e) => onChange({ ...prefs, musicOn: e.target.checked })}
           />
         </label>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="block">
-            <span className="label">Track</span>
-            <select
-              className="input"
-              value={prefs.track}
-              onChange={(e) => {
-                const track = TRACK_IDS.find((id) => id === e.target.value);
-                if (track) onChange({ ...prefs, track });
-              }}
-            >
-              {TRACK_IDS.map((id) => (
-                <option key={id} value={id}>
-                  {TRACKS[id].title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div>
-            <span className="label">Volume</span>
-            <VolumeControl volume={prefs.volume} onChange={(volume) => onChange({ ...prefs, volume })} />
-          </div>
+        <div>
+          <span className="label">Track</span>
+          <TrackPicker track={prefs.track} musicOn={prefs.musicOn} onPick={(track) => onChange({ ...prefs, track })} />
         </div>
-        <p className="muted text-xs">Gentle piano generated in your browser, in the spirit of Minecraft's calm music. No audio files, nothing downloaded.</p>
+        <div>
+          <span className="label">Volume</span>
+          <VolumeControl volume={prefs.volume} onChange={(volume) => onChange({ ...prefs, volume })} />
+        </div>
+        <p className="muted text-xs">
+          Meadow and Night Grass are gentle piano generated in your browser, in the spirit of Minecraft's calm music. My music plays your own
+          files, saved only on this device.
+        </p>
       </div>
     </section>
   );
