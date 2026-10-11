@@ -54,6 +54,13 @@ export function resolveTheme(mode: ThemeMode, now: Date): 'light' | 'dark' {
   return isNightTime(now) ? 'dark' : 'light';
 }
 
+export const VOLUME_STEP = 0.1;
+
+/** Nudges volume up or down by one step, staying in 0..1 without float drift. */
+export function stepVolume(volume: number, direction: 1 | -1): number {
+  return Math.max(0, Math.min(1, Math.round((volume + direction * VOLUME_STEP) * 20) / 20));
+}
+
 export function nextThemeMode(mode: ThemeMode): ThemeMode {
   return THEME_MODES[(THEME_MODES.indexOf(mode) + 1) % THEME_MODES.length] ?? 'auto';
 }

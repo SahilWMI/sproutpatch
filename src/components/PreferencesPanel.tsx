@@ -1,5 +1,6 @@
 import { TRACKS } from '../lib/music/composition';
 import { THEME_MODES, TRACK_IDS, type Prefs, type ThemeMode } from '../lib/prefs';
+import { VolumeControl } from './VolumeControl';
 
 const THEME_OPTIONS: Record<ThemeMode, string> = {
   auto: 'Auto (time of day)',
@@ -66,18 +67,10 @@ export function PreferencesPanel({ prefs, onChange }: PreferencesPanelProps) {
               ))}
             </select>
           </label>
-          <label className="block">
+          <div>
             <span className="label">Volume</span>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.05}
-              className="h-11 w-full accent-sprout-600"
-              value={prefs.volume}
-              onChange={(e) => onChange({ ...prefs, volume: Number(e.target.value) })}
-            />
-          </label>
+            <VolumeControl volume={prefs.volume} onChange={(volume) => onChange({ ...prefs, volume })} />
+          </div>
         </div>
         <p className="muted text-xs">Gentle piano generated in your browser, in the spirit of Minecraft's calm music. No audio files, nothing downloaded.</p>
       </div>
