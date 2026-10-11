@@ -74,7 +74,7 @@ export function WalkFlow({ entry, onExit }: WalkFlowProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-stone-950 px-6 text-center text-stone-400">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-stone-950 px-6 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] text-center text-stone-400">
       {phase === 'walking' && (
         <div className="flex flex-col items-center gap-10">
           <p className="sr-only" aria-live="polite">

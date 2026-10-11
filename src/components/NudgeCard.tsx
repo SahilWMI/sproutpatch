@@ -41,7 +41,7 @@ export function NudgeCard({ reply, nudge, replySource, fallbackReason, strategyN
             {strategyNotice && <p className="text-xs text-stone-500 dark:text-stone-400">{strategyNotice}</p>}
           </div>
         </div>
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
           <button type="button" className="btn-primary" onClick={onStartWalk} autoFocus>
             Start walk ({nudge.minutes} min)
           </button>
