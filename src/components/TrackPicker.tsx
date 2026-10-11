@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { customMusic } from '../lib/music/customPlayer';
 import { trackTitle } from '../lib/music/soundtrack';
 import { ACCEPTED_AUDIO, addSongs, listSongs, removeSong, type SongMeta } from '../lib/music/songStore';
@@ -37,7 +37,6 @@ function MySongs() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const inputId = useId();
 
   useEffect(() => {
     let live = true;
