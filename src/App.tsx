@@ -63,7 +63,7 @@ export default function App() {
   const firstRun = !settings.setupDone;
 
   return (
-    <Layout screen={screen} onNavigate={navigate}>
+    <Layout screen={screen} onNavigate={navigate} fullBleed={screen === 'home' && !firstRun}>
       {screen === 'home' && firstRun && <SetupWizard initial={settings} registry={pluginAgents} firstRun onSave={handleSave} />}
       {screen === 'home' && !firstRun && (
         <CheckInScreen

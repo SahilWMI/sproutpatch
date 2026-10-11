@@ -37,7 +37,7 @@ export function MoodChart({ points }: MoodChartProps) {
               className="stroke-stone-200 dark:stroke-stone-800"
               strokeDasharray={v === 0 ? undefined : '4 4'}
             />
-            <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-stone-400 text-[11px]">
+            <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-stone-400 text-[15px] sm:text-[11px]">
               {v > 0 ? `+${v}` : v}
             </text>
           </g>
@@ -56,7 +56,7 @@ export function MoodChart({ points }: MoodChartProps) {
             <circle cx={x(i)} cy={y(p.before)} r={5} className="fill-stone-400 dark:fill-stone-500" />
             <circle cx={x(i)} cy={y(p.after)} r={5} className="fill-sprout-600 dark:fill-sprout-400" />
             {(points.length <= 7 || i % 2 === 0) && (
-              <text x={x(i)} y={H - 8} textAnchor="middle" className="fill-stone-400 text-[11px]">
+              <text x={x(i)} y={H - 8} textAnchor="middle" className="fill-stone-400 text-[15px] sm:text-[11px]">
                 {fmt(p.date)}
               </text>
             )}
