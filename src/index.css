@@ -45,6 +45,16 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-sprout-500;
   }
+  button:not(:disabled) {
+    transition:
+      transform 100ms ease-out,
+      background-color 100ms ease-out,
+      filter 100ms ease-out;
+  }
+  button:not(:disabled):active {
+    transform: scale(0.97);
+    filter: brightness(0.95);
+  }
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -59,28 +69,33 @@
   @apply rounded-2xl border border-mist-200 bg-mist-50 p-5 shadow-sm shadow-mist-300/40 dark:border-mist-800 dark:bg-mist-900 dark:shadow-none;
 }
 
+@utility pressable {
+  @apply transition-transform transition-colors duration-100 ease-out;
+  @apply active:scale-[0.97] active:brightness-95;
+}
+
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  @apply pressable inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
 }
 
 @utility btn-primary {
-  @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply bg-sprout-600 text-white hover:bg-sprout-700 dark:bg-sprout-500 dark:text-sprout-950 dark:hover:bg-sprout-400;
+  @apply pressable inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  @apply bg-sprout-600 text-white hover:bg-sprout-700 active:bg-sprout-800 dark:bg-sprout-500 dark:text-sprout-950 dark:hover:bg-sprout-400 dark:active:bg-sprout-300;
 }
 
 @utility btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply border border-mist-400 bg-mist-50 text-mist-800 hover:bg-mist-200 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-200 dark:hover:bg-mist-800;
+  @apply pressable inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  @apply border border-mist-400 bg-mist-50 text-mist-800 hover:bg-mist-200 active:bg-mist-300 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-200 dark:hover:bg-mist-800 dark:active:bg-mist-700;
 }
 
 @utility btn-ghost {
-  @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply text-mist-700 hover:bg-mist-200 dark:text-mist-300 dark:hover:bg-mist-800;
+  @apply pressable inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  @apply text-mist-700 hover:bg-mist-200 active:bg-mist-300 dark:text-mist-300 dark:hover:bg-mist-800 dark:active:bg-mist-700;
 }
 
 @utility btn-danger {
-  @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply border border-red-300 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950;
+  @apply pressable inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  @apply border border-red-300 text-red-700 hover:bg-red-50 active:bg-red-100 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950 dark:active:bg-red-900;
 }
 
 @utility input {

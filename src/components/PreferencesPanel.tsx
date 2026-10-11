@@ -15,7 +15,7 @@ interface PreferencesPanelProps {
 
 export function PreferencesPanel({ prefs, onChange }: PreferencesPanelProps) {
   return (
-    <section className="card mt-6 space-y-5" aria-labelledby="prefs-title">
+    <section className="card mb-6 space-y-5" aria-labelledby="prefs-title">
       <h2 id="prefs-title" className="text-lg font-semibold">
         Look and sound
       </h2>
@@ -51,7 +51,7 @@ export function PreferencesPanel({ prefs, onChange }: PreferencesPanelProps) {
         </label>
         <div>
           <span className="label">Track</span>
-          <TrackPicker track={prefs.track} musicOn={prefs.musicOn} onPick={(track) => onChange({ ...prefs, track })} />
+          <TrackPicker track={prefs.track} musicOn={prefs.musicOn} onPick={(track) => onChange({ ...prefs, track, musicOn: true })} />
         </div>
         <div>
           <span className="label">Volume</span>

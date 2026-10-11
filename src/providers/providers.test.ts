@@ -5,7 +5,7 @@ import type { CheckInContext } from '../lib/types';
 import { isLocalUrl, type FetchLike } from './http';
 import { createOllamaProvider } from './ollama';
 import { createOpenAICompatibleProvider } from './openaiCompatible';
-import { formatSize, isGemma, listOllamaModels, parseTags, pickDefaultModel } from './tags';
+import { discoverOllamaModels, formatSize, isGemma, listOllamaModels, parseTags, pickDefaultModel, rememberOllamaBase, resolvedOllamaBase } from './tags';
 
 const ctx = (): CheckInContext => ({
   task: 'checkin',
@@ -66,6 +66,27 @@ describe('/api/tags parsing', () => {
     expect(proxy502).toMatchObject({ ok: false, reason: 'unreachable' });
     const notOllama = await listOllamaModels('/ollama', async () => new Response('<html>', { status: 200 }));
     expect(notOllama).toMatchObject({ ok: false, reason: 'bad-response' });
+  });
+
+  it('falls through to localhost when the proxy is down', async () => {
+    rememberOllamaBase(null);
+    const fetchImpl = vi.fn<FetchLike>(async (url) => {
+      if (String(url).startsWith('/ollama')) throw new TypeError('Failed to fetch');
+      return json(TAGS);
+    });
+    const result = await discoverOllamaModels(fetchImpl);
+    expect(result.ok && result.models).toHaveLength(3);
+    expect(resolvedOllamaBase()).toBe('http://127.0.0.1:11434');
+    expect(fetchImpl).toHaveBeenCalledWith('http://127.0.0.1:11434/api/tags', expect.anything());
+    rememberOllamaBase(null);
+  });
+
+  it('explains a 403 as Ollama blocking this page', async () => {
+    rememberOllamaBase(null);
+    const result = await discoverOllamaModels(async () => new Response('', { status: 403 }));
+    expect(result).toMatchObject({ ok: false, reason: 'unreachable' });
+    expect(result.ok === false && result.message).toMatch(/blocking this page/);
+    rememberOllamaBase(null);
   });
 });
 

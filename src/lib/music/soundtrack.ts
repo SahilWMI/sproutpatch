@@ -16,7 +16,9 @@ export function playTrack(id: TrackId): void {
     music.play(id);
   } else {
     music.stop();
-    void customMusic.play();
+    // Don't restart from the first file if the user just picked a song in the list.
+    if (customMusic.currentId) customMusic.resume();
+    else void customMusic.play();
   }
 }
 
