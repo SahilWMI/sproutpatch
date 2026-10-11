@@ -138,7 +138,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   return (
     <div className="space-y-6">
       <header className="flex items-start gap-3">
-        <SproutIcon className="h-10 w-10 shrink-0 text-sprout-600 dark:text-sprout-400" />
+        <SproutIcon className="h-10 w-10 shrink-0 text-sprout-700 dark:text-sprout-400" />
         <div>
           <h1 className="text-2xl font-semibold text-mist-800 dark:text-mist-100">
             {firstRun ? 'Bring your own Gemma' : 'Settings'}
@@ -179,7 +179,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
               <span>
                 <span className="block font-medium">{opt.label}</span>
-                <span className="text-mist-500 dark:text-mist-400">{opt.hint}</span>
+                <span className="text-mist-700 dark:text-mist-400">{opt.hint}</span>
               </span>
             </label>
           ))}
@@ -248,7 +248,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
                     className="accent-sprout-600"
                   />
                   <span className="font-mono">{m.name}</span>
-                  <span className="text-xs text-mist-500 dark:text-mist-400">
+                  <span className="text-xs text-mist-700 dark:text-mist-400">
                     {[m.parameterSize, formatSize(m.sizeBytes)].filter(Boolean).join(' · ')}
                   </span>
                   {isGemma(m.name) && (
@@ -334,7 +334,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
             </div>
           </div>
-          <p className="text-xs text-mist-500 dark:text-mist-400">The key is stored in this browser's IndexedDB only.</p>
+          <p className="text-xs text-mist-700 dark:text-mist-400">The key is stored in this browser's IndexedDB only.</p>
         </section>
       )}
 
@@ -385,7 +385,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           Weather and daylight always come from real data. The safety check runs before any of this and cannot be changed here.
         </p>
         {registry.skipped.length > 0 && (
-          <details className="text-xs text-mist-500 dark:text-mist-400">
+          <details className="text-xs text-mist-700 dark:text-mist-400">
             <summary>Some files in src/agents were skipped</summary>
             <ul className="mt-1 list-disc pl-5">
               {registry.skipped.map((s) => (

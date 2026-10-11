@@ -36,7 +36,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-2xl space-y-2">
-      <div className="flex items-end gap-2 rounded-3xl border border-mist-300 bg-white p-1.5 pl-4 shadow-lg shadow-mist-900/5 focus-within:border-sprout-500 dark:border-mist-700 dark:bg-mist-900 dark:shadow-black/30">
+      <div className="flex items-end gap-2 rounded-3xl border border-mist-500 bg-mist-50 p-1.5 pl-4 shadow-lg shadow-mist-900/5 focus-within:border-sprout-500 dark:border-mist-700 dark:bg-mist-900 dark:shadow-black/30">
         <label htmlFor="note" className="sr-only">
           How's today going?
         </label>
@@ -63,7 +63,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
           </svg>
         </button>
       </div>
-      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-mist-500 dark:text-mist-400">
+      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-mist-700 dark:text-mist-400">
         <span>🔒 Runs locally. Your entries never leave this device.</span>
         <span className="hidden sm:inline">Enter to send · Shift + Enter for a new line</span>
       </p>

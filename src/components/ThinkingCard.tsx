@@ -18,7 +18,7 @@ export function ThinkingCard({ label, onCancel }: ThinkingCardProps) {
 
   return (
     <div className="card flex flex-col items-center gap-4 py-10 text-center" role="status" aria-live="polite">
-      <SproutIcon className="h-12 w-12 animate-pulse text-sprout-600 dark:text-sprout-400" />
+      <SproutIcon className="h-12 w-12 animate-pulse text-sprout-700 dark:text-sprout-400" />
       <p className="text-mist-700 dark:text-mist-200">{label}</p>
       {slow && <p className="muted">Local models can take up to a minute.</p>}
       <button type="button" className="btn-secondary" onClick={onCancel}>

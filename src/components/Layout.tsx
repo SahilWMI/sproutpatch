@@ -28,14 +28,14 @@ export function Layout({ screen, onNavigate, fullBleed = false, actions, childre
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-30 border-b border-mist-200 bg-white/80 pt-[env(safe-area-inset-top)] backdrop-blur-md dark:border-mist-800 dark:bg-mist-900/75">
+      <header className="sticky top-0 z-30 border-b border-mist-200 bg-mist-50/80 pt-[env(safe-area-inset-top)] backdrop-blur-md dark:border-mist-800 dark:bg-mist-900/75">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3">
           <button
             type="button"
             onClick={() => onNavigate('home')}
             className="flex min-h-11 items-center gap-1.5 rounded-lg text-base font-semibold text-sprout-700 sm:gap-2 sm:text-lg dark:text-sprout-300"
           >
-            <SproutIcon className="h-7 w-7 text-sprout-600 dark:text-sprout-400" />
+            <SproutIcon className="h-7 w-7 text-sprout-700 dark:text-sprout-400" />
             <span className="max-sm:sr-only">Sproutpatch</span>
           </button>
           <div className="flex items-center gap-0.5 sm:gap-1">
@@ -50,7 +50,7 @@ export function Layout({ screen, onNavigate, fullBleed = false, actions, childre
                       className={`min-h-11 rounded-lg px-2.5 text-sm transition-colors sm:px-3 ${
                         screen === item.id
                           ? 'bg-sprout-100 font-medium text-sprout-800 dark:bg-sprout-900 dark:text-sprout-100'
-                          : 'text-mist-600 hover:bg-mist-100 dark:text-mist-300 dark:hover:bg-mist-800'
+                          : 'text-mist-700 hover:bg-mist-200 dark:text-mist-300 dark:hover:bg-mist-800'
                       }`}
                     >
                       {item.label}
@@ -76,7 +76,7 @@ export function Layout({ screen, onNavigate, fullBleed = false, actions, childre
 
 export function Footer() {
   return (
-    <footer className="border-t border-mist-200 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center text-xs text-mist-500 dark:border-mist-800 dark:text-mist-400">
+    <footer className="border-t border-mist-200 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center text-xs text-mist-700 dark:border-mist-800 dark:text-mist-400">
       Sproutpatch is not a therapist or a medical tool.
     </footer>
   );

@@ -4,11 +4,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Neutral scale: baby blue at the light end, deep navy (not black) at the dark end. */
-  --color-mist-50: #edf6fe;
-  --color-mist-100: #dcedfb;
-  --color-mist-200: #c2ddf4;
-  --color-mist-300: #a0c4e6;
+  /* Neutral scale: pastel baby blue at the light end, deep navy (not black) at the dark end.
+     Light-mode text uses 600 and darker (>= 5:1 on 50 and 100); 400-500 are for borders and decoration only. */
+  --color-mist-50: #e8f2fc;
+  --color-mist-100: #d5e7f8;
+  --color-mist-200: #bcd6f0;
+  --color-mist-300: #98bde3;
   --color-mist-400: #7ea4cb;
   --color-mist-500: #51739a;
   --color-mist-600: #415f84;
@@ -33,7 +34,7 @@
 
 @layer base {
   html {
-    @apply bg-mist-50 text-mist-800 antialiased;
+    @apply bg-mist-100 text-mist-900 antialiased;
     -webkit-tap-highlight-color: transparent;
     text-size-adjust: 100%;
   }
@@ -55,7 +56,7 @@
 }
 
 @utility card {
-  @apply rounded-2xl border border-mist-200 bg-white p-5 shadow-sm dark:border-mist-800 dark:bg-mist-900;
+  @apply rounded-2xl border border-mist-200 bg-mist-50 p-5 shadow-sm shadow-mist-300/40 dark:border-mist-800 dark:bg-mist-900 dark:shadow-none;
 }
 
 @utility btn {
@@ -69,12 +70,12 @@
 
 @utility btn-secondary {
   @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply border border-mist-300 bg-white text-mist-700 hover:bg-mist-100 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-200 dark:hover:bg-mist-800;
+  @apply border border-mist-400 bg-mist-50 text-mist-800 hover:bg-mist-200 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-200 dark:hover:bg-mist-800;
 }
 
 @utility btn-ghost {
   @apply inline-flex items-center justify-center gap-2 min-h-11 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
-  @apply text-mist-600 hover:bg-mist-100 dark:text-mist-300 dark:hover:bg-mist-800;
+  @apply text-mist-700 hover:bg-mist-200 dark:text-mist-300 dark:hover:bg-mist-800;
 }
 
 @utility btn-danger {
@@ -83,15 +84,15 @@
 }
 
 @utility input {
-  @apply w-full min-h-11 rounded-xl border border-mist-300 bg-white px-3 py-2 text-base text-mist-800 sm:text-sm placeholder:text-mist-400 dark:border-mist-700 dark:bg-mist-950 dark:text-mist-100;
+  @apply w-full min-h-11 rounded-xl border border-mist-500 bg-mist-50 px-3 py-2 text-base text-mist-900 sm:text-sm placeholder:text-mist-600 dark:border-mist-700 dark:bg-mist-950 dark:text-mist-100;
 }
 
 @utility label {
-  @apply mb-1 block text-sm font-medium text-mist-700 dark:text-mist-300;
+  @apply mb-1 block text-sm font-medium text-mist-800 dark:text-mist-300;
 }
 
 @utility muted {
-  @apply text-sm text-mist-500 dark:text-mist-400;
+  @apply text-sm text-mist-700 dark:text-mist-300;
 }
 
 @keyframes sprout-grow {

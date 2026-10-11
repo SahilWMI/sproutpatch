@@ -11,10 +11,9 @@ import { WalkFlow } from './components/WalkFlow';
 import { config } from './lib/config';
 import type { CheckInEntry } from './lib/entries';
 import { setMasterVolume, unlockAudio } from './lib/music/audio';
-import { nightSounds } from './lib/music/nightSounds';
 import { music } from './lib/music/player';
 import { rulesStrategy } from './lib/nudge/rules';
-import { DEFAULT_PREFS, applyTheme, isNightTime, loadPrefs, nextThemeMode, resolveTheme, savePrefs, type Prefs } from './lib/prefs';
+import { DEFAULT_PREFS, applyTheme, loadPrefs, nextThemeMode, resolveTheme, savePrefs, type Prefs } from './lib/prefs';
 import { pluginAgents } from './lib/registry';
 import { defaultSettings, loadSettings, resolveProvider, resolveStrategy, saveSettings, type AppSettings } from './lib/settings';
 
@@ -46,12 +45,6 @@ export default function App() {
     if (prefs.musicOn) music.play(prefs.track);
     else music.stop();
   }, [prefs.musicOn, prefs.track]);
-
-  const night = isNightTime(clock);
-  useEffect(() => {
-    if (prefs.nightSounds && night) nightSounds.start();
-    else nightSounds.stop();
-  }, [prefs.nightSounds, night]);
 
   useEffect(() => {
     setMasterVolume(prefs.volume);
