@@ -63,7 +63,7 @@ export async function exportAllData(): Promise<{ exportedAt: string; entries: En
   const database = await db();
   const [entries, settingsRows] = await Promise.all([listEntries(), database.getAll('settings')]);
   const settings: Record<string, unknown> = {};
-  for (const row of settingsRows) settings[row.key] = row.key === 'provider' ? redactKey(row.value) : row.value;
+  for (const row of settingsRows) settings[row.key] = redactKey(row.value);
   return { exportedAt: new Date().toISOString(), entries, settings };
 }
 
