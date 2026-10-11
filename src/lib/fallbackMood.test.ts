@@ -19,6 +19,19 @@ describe('estimateMood', () => {
     expect(estimateMood('').mood_score).toBe(0);
   });
 
+  it('reads slang and emoji', () => {
+    expect(estimateMood('so stoked, best day 🥳').mood_score).toBeGreaterThanOrEqual(2);
+    expect(estimateMood('today sucks fml').mood_score).toBeLessThanOrEqual(-2);
+    expect(estimateMood('😭😭').mood_score).toBeLessThanOrEqual(-2);
+    expect(estimateMood('😊').mood_score).toBeGreaterThan(0);
+  });
+
+  it('says whether it found any mood signal', () => {
+    expect(estimateMood('Went to the post office.').matched).toBe(false);
+    expect(estimateMood('okay day').matched).toBe(true);
+    expect(estimateMood('🙂').matched).toBe(true);
+  });
+
   it('handles negation', () => {
     expect(estimateMood('not good').mood_score).toBeLessThan(0);
     expect(estimateMood('not bad at all').mood_score).toBeGreaterThanOrEqual(0);

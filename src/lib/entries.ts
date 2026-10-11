@@ -72,6 +72,20 @@ export const MOOD_AFTER_OPTIONS = [
   { value: 3, emoji: '😄', label: 'Great' },
 ] as const;
 
+export const RECENT_MOOD_WINDOW_MS = 6 * 60 * 60 * 1000;
+
+/** The newest post-walk mood from the last few hours, if any. Sample entries never count. */
+export function recentMoodAfter(entries: readonly Entry[], now: Date): number | undefined {
+  let newest: { at: number; mood: number } | undefined;
+  for (const e of entries) {
+    if (e.kind !== 'checkin' || e.sample || e.moodAfter === undefined) continue;
+    const at = Date.parse(e.walk?.endedAt ?? e.createdAt);
+    if (!Number.isFinite(at) || now.getTime() - at > RECENT_MOOD_WINDOW_MS || at > now.getTime()) continue;
+    if (!newest || at > newest.at) newest = { at, mood: e.moodAfter };
+  }
+  return newest?.mood;
+}
+
 function signOff(now: Date): string {
   const hour = now.getHours();
   if (hour >= 5 && hour < 12) return 'Enjoy the rest of the morning.';

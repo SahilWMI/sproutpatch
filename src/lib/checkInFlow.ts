@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { estimateMood } from './fallbackMood';
+import { clampMood, estimateMood, type MoodEstimate } from './fallbackMood';
 import { suggestByRules } from './nudge/rules';
+import { templateReply } from './replyTemplates';
 import { runCheckIn, type FallbackReason } from './runCheckIn';
 import { checkSafety } from './safety';
 import type { Nudge, NudgeInput, NudgeStrategy, Provider, WeatherSnapshot } from './types';
@@ -43,6 +44,10 @@ export interface CheckInFlowOptions {
   signal?: AbortSignal;
   now?: Date;
   seed?: number;
+  /** Mood the user picked themselves. It beats any estimate, but never skips the safety checks. */
+  moodOverride?: number;
+  /** Mood from a recent post-walk check, used when the note itself carries no mood signal. */
+  recentMood?: number;
 }
 
 const NudgeSchema = z.object({
@@ -57,6 +62,18 @@ export function validateNudge(value: unknown): Nudge | null {
   const parsed = NudgeSchema.safeParse(value);
   if (!parsed.success) return null;
   return { ...parsed.data, minutes: Math.max(1, Math.min(60, Math.round(parsed.data.minutes))) };
+}
+
+/** Picked mood, then the model's reading, then the lexicon; a recent post-walk mood fills in for a blank note. */
+export function resolveMood(
+  modelScore: number | null,
+  estimate: MoodEstimate,
+  opts: Pick<CheckInFlowOptions, 'moodOverride' | 'recentMood'>,
+): number {
+  if (opts.moodOverride !== undefined) return clampMood(opts.moodOverride);
+  if (modelScore !== null) return modelScore;
+  if (estimate.matched === false && opts.recentMood !== undefined) return clampMood(opts.recentMood);
+  return estimate.mood_score;
 }
 
 /** Changes every second, so back-to-back check-ins don't get word-for-word the same suggestion. */
@@ -112,7 +129,8 @@ export async function performCheckIn(opts: CheckInFlowOptions): Promise<CheckInF
     return { kind: 'risk', moodScore: Math.min(outcome.result.mood_score, RISK_MOOD_CEILING), trigger: 'model' };
   }
 
-  const moodScore = outcome.source === 'model' ? outcome.result.mood_score : estimate.mood_score;
+  const moodScore = resolveMood(outcome.source === 'model' ? outcome.result.mood_score : null, estimate, opts);
+  const reply = outcome.source === 'model' ? outcome.result.reply : templateReply(moodScore, seed);
   const themes = outcome.result.themes.length > 0 ? outcome.result.themes : estimate.themes;
   const weather = await weatherPromise;
 
@@ -128,7 +146,7 @@ export async function performCheckIn(opts: CheckInFlowOptions): Promise<CheckInF
 
   return {
     kind: 'ok',
-    reply: outcome.result.reply,
+    reply,
     moodScore,
     themes,
     nudge,

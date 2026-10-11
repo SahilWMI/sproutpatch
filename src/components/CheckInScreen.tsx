@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { performCheckIn, type CheckInFlowResult } from '../lib/checkInFlow';
-import { saveEntry } from '../lib/db';
-import { entryFromResult, type CheckInEntry } from '../lib/entries';
+import { listEntries, saveEntry } from '../lib/db';
+import { entryFromResult, recentMoodAfter, type CheckInEntry } from '../lib/entries';
 import { getCoordinates } from '../lib/location';
 import { fetchWeather } from '../lib/weather';
 import type { NudgeStrategy, Provider } from '../lib/types';
@@ -31,18 +31,28 @@ async function loadWeather() {
   return fetchWeather(lat, lon);
 }
 
+async function loadRecentMood(now: Date): Promise<number | undefined> {
+  try {
+    return recentMoodAfter(await listEntries(), now);
+  } catch {
+    return undefined;
+  }
+}
+
 export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: CheckInScreenProps) {
   const [step, setStep] = useState<Step>({ kind: 'compose' });
   const [saveError, setSaveError] = useState<string | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
 
-  async function handleSubmit(note: string) {
+  async function handleSubmit(note: string, mood: number | null) {
     const controller = new AbortController();
     controllerRef.current = controller;
     setSaveError(null);
     setStep({ kind: 'thinking' });
 
     const now = new Date();
+    const moodOverride = mood ?? undefined;
+    const recentMood = await loadRecentMood(now);
     let result: CheckInFlowResult;
     try {
       result = await performCheckIn({
@@ -53,10 +63,21 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
         timeoutMs,
         signal: controller.signal,
         now,
+        moodOverride,
+        recentMood,
       });
     } catch {
       // performCheckIn already contains its own fallbacks; this is a last-resort guard.
-      result = await performCheckIn({ note, provider: null, strategy, getWeather: async () => null, timeoutMs, now });
+      result = await performCheckIn({
+        note,
+        provider: null,
+        strategy,
+        getWeather: async () => null,
+        timeoutMs,
+        now,
+        moodOverride,
+        recentMood,
+      });
     }
 
     const entry = entryFromResult(note, result, now);

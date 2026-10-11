@@ -1,5 +1,38 @@
 import { describe, expect, it } from 'vitest';
-import { MOOD_AFTER_OPTIONS, afterWalkMessage, entryFromResult } from './entries';
+import { MOOD_AFTER_OPTIONS, afterWalkMessage, entryFromResult, recentMoodAfter, type CheckInEntry } from './entries';
+
+describe('recentMoodAfter', () => {
+  const now = new Date(2026, 9, 12, 12, 0);
+  const walked = (hoursAgo: number, moodAfter: number | undefined, sample = false): CheckInEntry => ({
+    id: `e${hoursAgo}`,
+    createdAt: new Date(now.getTime() - hoursAgo * 3_600_000 - 1_800_000).toISOString(),
+    kind: 'checkin',
+    moodBefore: 0,
+    note: 'x',
+    themes: [],
+    reply: 'x',
+    replySource: 'fallback',
+    nudge: { rule: 'light', suggestion: 'x', minutes: 30, reason: 'x' },
+    walk: {
+      plannedMinutes: 30,
+      startedAt: new Date(now.getTime() - hoursAgo * 3_600_000 - 1_800_000).toISOString(),
+      endedAt: new Date(now.getTime() - hoursAgo * 3_600_000).toISOString(),
+      completed: true,
+    },
+    moodAfter,
+    sample,
+  });
+
+  it('returns the newest post-walk mood within six hours', () => {
+    expect(recentMoodAfter([walked(3, 1.5), walked(1, -3)], now)).toBe(-3);
+  });
+
+  it('ignores old, skipped and sample walks', () => {
+    expect(recentMoodAfter([walked(7, -3)], now)).toBeUndefined();
+    expect(recentMoodAfter([walked(1, undefined)], now)).toBeUndefined();
+    expect(recentMoodAfter([walked(1, -3, true)], now)).toBeUndefined();
+  });
+});
 
 describe('mood-after picker', () => {
   it('has 5 options spanning the same -3..3 scale as mood before', () => {
