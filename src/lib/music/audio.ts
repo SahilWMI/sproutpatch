@@ -7,7 +7,7 @@ export interface SharedAudio {
   wet: GainNode;
 }
 
-const MASTER_LEVEL = 0.5;
+const MASTER_LEVEL = 0.75;
 let shared: SharedAudio | null = null;
 let master: GainNode | null = null;
 let volume = 0.5;

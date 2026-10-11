@@ -9,3 +9,5 @@ logs/
 npm-debug.log*
 .DS_Store
 .vite/
+# Copied from node_modules by scripts/copy-mediapipe-wasm.mjs
+public/mediapipe/

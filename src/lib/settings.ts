@@ -7,6 +7,7 @@ import type { AgentRegistry } from './registry';
 import type { NudgeStrategy, Provider } from './types';
 import { mockProvider } from '../providers/mock';
 import { createOllamaProvider } from '../providers/ollama';
+import { ON_DEVICE_PROVIDER_ID, onDeviceProvider } from '../providers/onDevice/onDevice';
 import { createOpenAICompatibleProvider } from '../providers/openaiCompatible';
 
 export const SETTINGS_KEY = 'app';
@@ -67,6 +68,8 @@ export function resolveProvider(settings: AppSettings, registry: AgentRegistry):
       return null;
     case 'mock':
       return mockProvider;
+    case ON_DEVICE_PROVIDER_ID:
+      return onDeviceProvider;
     case 'ollama':
       return settings.ollamaModel.trim() ? createOllamaProvider({ model: settings.ollamaModel.trim() }) : null;
     case 'openai-compatible':

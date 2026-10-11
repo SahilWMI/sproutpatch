@@ -7,6 +7,8 @@ import { availableStrategies, resolveProvider, type AppSettings } from '../lib/s
 import { withTimeout, TimeoutError, CancelledError } from '../lib/withTimeout';
 import { isLocalUrl } from '../providers/http';
 import { formatSize, isGemma, listOllamaModels, pickDefaultModel, type InstalledModel } from '../providers/tags';
+import { ON_DEVICE_PROVIDER_ID } from '../providers/onDevice/onDevice';
+import { OnDeviceModelSection } from './OnDeviceModelSection';
 import { SproutIcon } from './SproutIcon';
 
 interface SetupWizardProps {
@@ -128,7 +130,8 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   const strategies = availableStrategies(registry);
   const remote = draft.providerId === 'openai-compatible' && !isLocalUrl(draft.openaiBaseUrl);
   const providerOptions: { id: string; label: string; hint: string }[] = [
-    { id: 'ollama', label: 'Ollama (local)', hint: 'Recommended. Uses a Gemma model you installed.' },
+    { id: 'ollama', label: 'Ollama (local)', hint: 'Recommended on a computer. Uses a Gemma model you installed.' },
+    { id: ON_DEVICE_PROVIDER_ID, label: 'Gemma on this device', hint: 'Gemma 3 270M in the browser. Works on Android, offline.' },
     { id: 'openai-compatible', label: 'OpenAI-compatible server', hint: 'LM Studio, llama.cpp server, vLLM…' },
     { id: 'mock', label: 'Mock', hint: 'Deterministic canned replies, for demos.' },
     { id: 'none', label: 'No model', hint: 'Keyword mood estimate and reply templates only.' },
@@ -144,15 +147,17 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
             {firstRun ? 'Bring your own Gemma' : 'Settings'}
           </h1>
           <p className="muted">
-            Sproutpatch never downloads or bundles a model. It talks to one you installed yourself, on your own computer.
+            Sproutpatch never downloads or bundles a model. It talks to one you got yourself, on your computer or on this
+            device.
           </p>
         </div>
       </header>
 
       {config.hosted && (
         <p className="rounded-xl bg-mist-100 p-3 text-sm text-mist-700 dark:bg-mist-800 dark:text-mist-200" role="note">
-          You're on the hosted version, which runs without a model: mood comes from a keyword estimate and nudges from
-          the weather rules. To use your own Gemma, run Sproutpatch on your computer with <Code>npm run dev</Code>.
+          You're on the hosted version, which starts without a model: mood comes from a keyword estimate and nudges from
+          the weather rules. To use Gemma here, pick "Gemma on this device" below. Ollama only works when Sproutpatch runs
+          on your own computer (<Code>npm run dev</Code>).
         </p>
       )}
 
@@ -185,6 +190,8 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           ))}
         </div>
       </fieldset>
+
+      {draft.providerId === ON_DEVICE_PROVIDER_ID && <OnDeviceModelSection />}
 
       {draft.providerId === 'ollama' && (
         <section className="card space-y-4" aria-labelledby="ollama-heading">
