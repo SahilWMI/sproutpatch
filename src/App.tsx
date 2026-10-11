@@ -1,21 +1,24 @@
 import { useState } from 'react';
 import { Layout, type Screen } from './components/Layout';
-import { HomeScreen } from './components/HomeScreen';
+import { CheckInScreen } from './components/CheckInScreen';
+import { config } from './lib/config';
+import { rulesStrategy } from './lib/nudge/rules';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
-  const [lastNote, setLastNote] = useState<string | null>(null);
+  const [walkNotice, setWalkNotice] = useState(false);
 
   return (
     <Layout screen={screen} onNavigate={setScreen}>
       {screen === 'home' && (
-        <div className="space-y-6">
-          <HomeScreen onSubmit={setLastNote} />
-          {lastNote && (
-            <div className="card" role="status">
-              <p className="muted">Check-in received. The reply engine arrives in the next step.</p>
-            </div>
-          )}
+        <div className="space-y-4">
+          <CheckInScreen
+            provider={null}
+            strategy={rulesStrategy}
+            timeoutMs={config.timeoutMs}
+            onStartWalk={() => setWalkNotice(true)}
+          />
+          {walkNotice && <p className="muted">The walk timer arrives in a later step. Go anyway!</p>}
         </div>
       )}
       {screen === 'history' && <p className="muted">Your history will show up here.</p>}
