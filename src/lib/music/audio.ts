@@ -1,4 +1,4 @@
-/** One AudioContext for everything: music and night sounds share the volume and the unlock gesture. */
+/** One AudioContext for all app sound, with a master volume and a shared unlock gesture. */
 export interface SharedAudio {
   ctx: AudioContext;
   /** Straight to the speakers, through the master volume. */
@@ -7,7 +7,7 @@ export interface SharedAudio {
   wet: GainNode;
 }
 
-const MASTER_LEVEL = 0.5;
+const MASTER_LEVEL = 0.75;
 let shared: SharedAudio | null = null;
 let master: GainNode | null = null;
 let volume = 0.5;

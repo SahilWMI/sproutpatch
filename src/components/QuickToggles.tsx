@@ -7,7 +7,7 @@ const THEME_LABEL: Record<ThemeMode, string> = {
 };
 
 const iconButton =
-  'flex h-11 w-11 items-center justify-center rounded-lg text-mist-600 transition-colors hover:bg-mist-100 dark:text-mist-300 dark:hover:bg-mist-800';
+  'flex h-11 w-11 items-center justify-center rounded-lg text-mist-700 transition-colors hover:bg-mist-200 dark:text-mist-300 dark:hover:bg-mist-800';
 
 function ThemeIcon({ mode }: { mode: ThemeMode }) {
   if (mode === 'light') {

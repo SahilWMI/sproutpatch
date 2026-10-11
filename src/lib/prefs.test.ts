@@ -51,7 +51,7 @@ describe('normalizePrefs', () => {
     expect(normalizePrefs({ theme: 'dark' })).toEqual({ ...DEFAULT_PREFS, theme: 'dark' });
     expect(normalizePrefs({ theme: 'purple' })).toEqual(DEFAULT_PREFS);
     expect(normalizePrefs({ volume: 7 })).toEqual(DEFAULT_PREFS);
-    // Prefs saved before night sounds existed get them switched on.
-    expect(normalizePrefs({ theme: 'auto', musicOn: true, track: 'meadow', volume: 0.5 }).nightSounds).toBe(true);
+    // Older saves may still carry the removed nightSounds flag; it is dropped.
+    expect(normalizePrefs({ ...DEFAULT_PREFS, nightSounds: true })).toEqual(DEFAULT_PREFS);
   });
 });

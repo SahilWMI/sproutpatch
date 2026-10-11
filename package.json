@@ -6,12 +6,15 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/copy-mediapipe-wasm.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/copy-mediapipe-wasm.mjs",
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mediapipe/tasks-genai": "^0.10.29",
     "idb": "^8.0.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

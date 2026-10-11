@@ -18,7 +18,7 @@ function Switch({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-/** Header button that opens quick sound controls: music, track, volume and night crickets. */
+/** Header button that opens quick sound controls: music, track and volume. */
 export function MusicMenu({ prefs, onChange }: MusicMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -54,8 +54,8 @@ export function MusicMenu({ prefs, onChange }: MusicMenuProps) {
         aria-controls={panelId}
         aria-label={`Sound settings. Music is ${prefs.musicOn ? 'on' : 'off'}.`}
         title="Sound"
-        className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-mist-100 dark:hover:bg-mist-800 ${
-          prefs.musicOn ? 'text-sprout-700 dark:text-sprout-300' : 'text-mist-600 dark:text-mist-300'
+        className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-mist-200 dark:hover:bg-mist-800 ${
+          prefs.musicOn ? 'text-sprout-700 dark:text-sprout-300' : 'text-mist-700 dark:text-mist-300'
         }`}
       >
         <MusicIcon on={prefs.musicOn} />
@@ -65,7 +65,7 @@ export function MusicMenu({ prefs, onChange }: MusicMenuProps) {
           id={panelId}
           role="dialog"
           aria-label="Sound"
-          className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+4rem)] z-40 space-y-3 rounded-2xl border border-mist-200 bg-white p-4 text-mist-800 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-100"
+          className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+4rem)] z-40 space-y-3 rounded-2xl border border-mist-200 bg-mist-50 p-4 text-mist-800 shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 dark:border-mist-700 dark:bg-mist-900 dark:text-mist-100"
         >
           <Switch label="Music" checked={prefs.musicOn} onChange={(musicOn) => onChange({ ...prefs, musicOn })} />
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="Track">
@@ -85,7 +85,6 @@ export function MusicMenu({ prefs, onChange }: MusicMenuProps) {
             <p className="mb-1 text-sm font-medium">Volume</p>
             <VolumeControl volume={prefs.volume} onChange={(volume) => onChange({ ...prefs, volume })} />
           </div>
-          <Switch label="Night crickets (18:30–6:30)" checked={prefs.nightSounds} onChange={(nightSounds) => onChange({ ...prefs, nightSounds })} />
         </div>
       )}
     </div>

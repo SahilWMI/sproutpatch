@@ -7,6 +7,8 @@ import { availableStrategies, resolveProvider, type AppSettings } from '../lib/s
 import { withTimeout, TimeoutError, CancelledError } from '../lib/withTimeout';
 import { isLocalUrl } from '../providers/http';
 import { formatSize, isGemma, listOllamaModels, pickDefaultModel, type InstalledModel } from '../providers/tags';
+import { ON_DEVICE_PROVIDER_ID } from '../providers/onDevice/onDevice';
+import { OnDeviceModelSection } from './OnDeviceModelSection';
 import { SproutIcon } from './SproutIcon';
 
 interface SetupWizardProps {
@@ -128,7 +130,8 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   const strategies = availableStrategies(registry);
   const remote = draft.providerId === 'openai-compatible' && !isLocalUrl(draft.openaiBaseUrl);
   const providerOptions: { id: string; label: string; hint: string }[] = [
-    { id: 'ollama', label: 'Ollama (local)', hint: 'Recommended. Uses a Gemma model you installed.' },
+    { id: 'ollama', label: 'Ollama (local)', hint: 'Recommended on a computer. Uses a Gemma model you installed.' },
+    { id: ON_DEVICE_PROVIDER_ID, label: 'Gemma on this device', hint: 'Gemma 3 270M in the browser. Works on Android, offline.' },
     { id: 'openai-compatible', label: 'OpenAI-compatible server', hint: 'LM Studio, llama.cpp server, vLLM…' },
     { id: 'mock', label: 'Mock', hint: 'Deterministic canned replies, for demos.' },
     { id: 'none', label: 'No model', hint: 'Keyword mood estimate and reply templates only.' },
@@ -138,21 +141,23 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   return (
     <div className="space-y-6">
       <header className="flex items-start gap-3">
-        <SproutIcon className="h-10 w-10 shrink-0 text-sprout-600 dark:text-sprout-400" />
+        <SproutIcon className="h-10 w-10 shrink-0 text-sprout-700 dark:text-sprout-400" />
         <div>
           <h1 className="text-2xl font-semibold text-mist-800 dark:text-mist-100">
             {firstRun ? 'Bring your own Gemma' : 'Settings'}
           </h1>
           <p className="muted">
-            Sproutpatch never downloads or bundles a model. It talks to one you installed yourself, on your own computer.
+            Sproutpatch never downloads or bundles a model. It talks to one you got yourself, on your computer or on this
+            device.
           </p>
         </div>
       </header>
 
       {config.hosted && (
         <p className="rounded-xl bg-mist-100 p-3 text-sm text-mist-700 dark:bg-mist-800 dark:text-mist-200" role="note">
-          You're on the hosted version, which runs without a model: mood comes from a keyword estimate and nudges from
-          the weather rules. To use your own Gemma, run Sproutpatch on your computer with <Code>npm run dev</Code>.
+          You're on the hosted version, which starts without a model: mood comes from a keyword estimate and nudges from
+          the weather rules. To use Gemma here, pick "Gemma on this device" below. Ollama only works when Sproutpatch runs
+          on your own computer (<Code>npm run dev</Code>).
         </p>
       )}
 
@@ -179,12 +184,14 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
               <span>
                 <span className="block font-medium">{opt.label}</span>
-                <span className="text-mist-500 dark:text-mist-400">{opt.hint}</span>
+                <span className="text-mist-700 dark:text-mist-400">{opt.hint}</span>
               </span>
             </label>
           ))}
         </div>
       </fieldset>
+
+      {draft.providerId === ON_DEVICE_PROVIDER_ID && <OnDeviceModelSection />}
 
       {draft.providerId === 'ollama' && (
         <section className="card space-y-4" aria-labelledby="ollama-heading">
@@ -248,7 +255,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
                     className="accent-sprout-600"
                   />
                   <span className="font-mono">{m.name}</span>
-                  <span className="text-xs text-mist-500 dark:text-mist-400">
+                  <span className="text-xs text-mist-700 dark:text-mist-400">
                     {[m.parameterSize, formatSize(m.sizeBytes)].filter(Boolean).join(' · ')}
                   </span>
                   {isGemma(m.name) && (
@@ -334,7 +341,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
             </div>
           </div>
-          <p className="text-xs text-mist-500 dark:text-mist-400">The key is stored in this browser's IndexedDB only.</p>
+          <p className="text-xs text-mist-700 dark:text-mist-400">The key is stored in this browser's IndexedDB only.</p>
         </section>
       )}
 
@@ -385,7 +392,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           Weather and daylight always come from real data. The safety check runs before any of this and cannot be changed here.
         </p>
         {registry.skipped.length > 0 && (
-          <details className="text-xs text-mist-500 dark:text-mist-400">
+          <details className="text-xs text-mist-700 dark:text-mist-400">
             <summary>Some files in src/agents were skipped</summary>
             <ul className="mt-1 list-disc pl-5">
               {registry.skipped.map((s) => (

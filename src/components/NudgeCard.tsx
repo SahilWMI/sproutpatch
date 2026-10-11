@@ -26,19 +26,19 @@ export function NudgeCard({ reply, nudge, replySource, fallbackReason, strategyN
       <div className="card">
         <p className="text-lg leading-relaxed text-mist-800 dark:text-mist-100">{reply}</p>
         {replySource === 'fallback' && (
-          <p className="mt-3 text-xs text-mist-400 dark:text-mist-500">{FALLBACK_NOTES[fallbackReason ?? 'no-provider']}</p>
+          <p className="mt-3 text-xs text-mist-700 dark:text-mist-400">{FALLBACK_NOTES[fallbackReason ?? 'no-provider']}</p>
         )}
       </div>
 
       <div className="card border-sprout-200 bg-sprout-50 dark:border-sprout-900 dark:bg-sprout-950">
         <div className="flex items-start gap-3">
-          <SproutIcon className="mt-0.5 h-8 w-8 shrink-0 text-sprout-600 dark:text-sprout-400" />
+          <SproutIcon className="mt-0.5 h-8 w-8 shrink-0 text-sprout-700 dark:text-sprout-400" />
           <div className="space-y-2">
             <h2 id="nudge-heading" className="text-base font-semibold text-sprout-900 dark:text-sprout-100">
               {nudge.suggestion}
             </h2>
             <p className="text-sm text-sprout-800 dark:text-sprout-300">{nudge.reason}</p>
-            {strategyNotice && <p className="text-xs text-mist-500 dark:text-mist-400">{strategyNotice}</p>}
+            {strategyNotice && <p className="text-xs text-mist-700 dark:text-mist-400">{strategyNotice}</p>}
           </div>
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">

@@ -132,7 +132,7 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
 
       <div className="sticky bottom-0 z-20 border-t border-mist-200/70 bg-mist-50/90 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md dark:border-mist-800/70 dark:bg-mist-950/85">
         {composing && <Composer onSubmit={handleSubmit} />}
-        <p className={`text-center text-[11px] text-mist-400 dark:text-mist-500 ${composing ? 'mt-1' : ''}`}>
+        <p className={`text-center text-[11px] text-mist-700 dark:text-mist-400 ${composing ? 'mt-1' : ''}`}>
           Sproutpatch is not a therapist or a medical tool.
         </p>
       </div>
