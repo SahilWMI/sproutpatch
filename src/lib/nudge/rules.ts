@@ -4,7 +4,7 @@ export const RAIN_PROBABILITY_THRESHOLD = 60;
 export const HEAT_THRESHOLD_C = 36;
 export const DUSK_THRESHOLD_MINUTES = 20;
 export const RAIN_MINUTES = 5;
-export const SHORT_WALK_CAP_MINUTES = 15;
+export const SHORT_WALK_CAP_MINUTES = 30;
 
 /** WMO codes: 65/67 heavy (freezing) rain, 81/82 heavy/violent showers, 95-99 thunderstorms. */
 const HEAVY_RAIN_CODES = new Set([65, 67, 81, 82]);
@@ -38,12 +38,21 @@ export function walkMinutesForMood(moodScore: number): number {
   return 60;
 }
 
-/** Rain is a fixed doorstep break; heat and darkness keep the walk short; otherwise mood decides. */
+/** Shorter ladder for heat and darkness that still follows mood: 10, 15, 20, 25 or 30 minutes. */
+export function shortWalkMinutesForMood(moodScore: number): number {
+  const mood = Math.round(moodScore);
+  if (mood <= -2) return 10;
+  if (mood === -1) return 15;
+  if (mood === 0) return 20;
+  if (mood <= 2) return 25;
+  return SHORT_WALK_CAP_MINUTES;
+}
+
+/** Rain is a fixed doorstep break; heat and darkness keep the walk shorter; otherwise mood decides. */
 export function minutesForRule(rule: NudgeRuleId, moodScore: number): number {
   if (rule === 'rain') return RAIN_MINUTES;
-  const tier = walkMinutesForMood(moodScore);
-  if (rule === 'heat' || rule === 'dark') return Math.min(tier, SHORT_WALK_CAP_MINUTES);
-  return tier;
+  if (rule === 'heat' || rule === 'dark') return shortWalkMinutesForMood(moodScore);
+  return walkMinutesForMood(moodScore);
 }
 
 export function formatSpan(minutes: number): string {
