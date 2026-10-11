@@ -59,6 +59,10 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   };
 
   const checkOllama = useCallback(async () => {
+    if (config.hosted) {
+      setTags({ status: 'error', message: 'Ollama is only reachable when Sproutpatch runs on your own computer.' });
+      return;
+    }
     setTags({ status: 'loading' });
     const result = await listOllamaModels();
     if (result.ok) {
@@ -144,6 +148,13 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           </p>
         </div>
       </header>
+
+      {config.hosted && (
+        <p className="rounded-xl bg-mist-100 p-3 text-sm text-mist-700 dark:bg-mist-800 dark:text-mist-200" role="note">
+          You're on the hosted version, which runs without a model: mood comes from a keyword estimate and nudges from
+          the weather rules. To use your own Gemma, run Sproutpatch on your computer with <Code>npm run dev</Code>.
+        </p>
+      )}
 
       <fieldset className="card space-y-3">
         <legend className="sr-only">Where replies come from</legend>

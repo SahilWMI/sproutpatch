@@ -19,6 +19,8 @@ const proxy: Record<string, ProxyOptions> = {
 };
 
 export default defineConfig({
+  // GitHub Pages serves the site from /<repo>/; the deploy workflow sets BASE_PATH.
+  base: process.env.BASE_PATH ?? '/',
   plugins: [react(), tailwindcss()],
   // Tailwind runs through its Vite plugin; an inline config stops Vite from picking up stray PostCSS configs in parent folders.
   css: { postcss: {} },

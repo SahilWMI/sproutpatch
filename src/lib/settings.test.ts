@@ -17,6 +17,11 @@ describe('settings', () => {
     expect(resolveProvider(s, registry)).toBeNull();
   });
 
+  it('hosted builds start without a model and skip the wizard', () => {
+    const s = defaultSettings(readConfig({ VITE_HOSTED: 'true' }));
+    expect(s).toMatchObject({ providerId: 'none', setupDone: true, strategyId: 'rules' });
+  });
+
   it('a configured VITE_BASE_URL switches the default to openai-compatible', () => {
     const s = defaultSettings(readConfig({ VITE_BASE_URL: 'http://localhost:8080/v1', VITE_MODEL: 'gemma' }));
     expect(s).toMatchObject({ providerId: 'openai-compatible', openaiBaseUrl: 'http://localhost:8080/v1', openaiModel: 'gemma' });

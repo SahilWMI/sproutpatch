@@ -5,6 +5,8 @@ export interface AppConfig {
   timeoutMs: number;
   defaultLat: number;
   defaultLon: number;
+  /** Built for a public static host, where no local model is reachable. */
+  hosted: boolean;
 }
 
 export const DEFAULT_TIMEOUT_MS = 90_000;
@@ -31,6 +33,7 @@ export function readConfig(env: EnvLike): AppConfig {
     timeoutMs: num(env.VITE_TIMEOUT_MS, DEFAULT_TIMEOUT_MS, 1_000, 600_000),
     defaultLat: num(env.VITE_DEFAULT_LAT, DEFAULT_LAT, -90, 90),
     defaultLon: num(env.VITE_DEFAULT_LON, DEFAULT_LON, -180, 180),
+    hosted: str(env.VITE_HOSTED) === 'true',
   };
 }
 

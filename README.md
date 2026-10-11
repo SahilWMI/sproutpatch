@@ -22,6 +22,15 @@ Open the URL Vite prints (usually http://localhost:5173), and pick your model in
 
 Other scripts: `npm run build`, `npm test`, `npm run preview` (the `/ollama` proxy works in preview too). Requires Node 20.19+ (tested on Node 26).
 
+### On your phone
+
+- **Hosted, no model:** open **https://sahilwmi.github.io/sproutpatch/** and use your browser's "Add to Home Screen" to get a full-screen app. This version runs without a model (keyword mood estimate, template replies, weather-based nudges). Everything else works, including location, weather, the walk timer, history, music and the night crickets. Entries stay in the phone's browser storage.
+- **With your own Gemma:** run `npm run dev -- --host` on your computer and open the "Network" URL it prints (for example `http://192.168.x.x:5173`) on a phone on the same Wi-Fi. The model replies through your computer. Phones only share location with `https` pages, so here the weather falls back to `VITE_DEFAULT_LAT` / `VITE_DEFAULT_LON`.
+
+### Deploying
+
+Every push to `main` runs `.github/workflows/deploy.yml`: tests, then a build with `VITE_HOSTED=true` and `BASE_PATH=/<repo>/`, then a deploy to GitHub Pages. `VITE_HOSTED` makes a fresh install start in no-model mode and skip the setup wizard, because a public site can't reach a model on the visitor's computer. On a fork, enable Pages with source "GitHub Actions".
+
 ## How it works: the model proposes, plain code decides
 
 The model only ever produces a 1-2 sentence reply and a rough mood guess, as JSON:

@@ -24,7 +24,11 @@ const SettingsSchema = z.object({
 
 export type AppSettings = z.infer<typeof SettingsSchema>;
 
+/** Hosted builds start in no-model mode and skip the model wizard; Settings can still connect one. */
 export function defaultSettings(cfg: AppConfig = config): AppSettings {
+  if (cfg.hosted && !cfg.baseUrl) {
+    return { ...defaultSettings({ ...cfg, hosted: false }), providerId: 'none', setupDone: true };
+  }
   return {
     providerId: cfg.baseUrl ? 'openai-compatible' : 'ollama',
     ollamaModel: cfg.model,
