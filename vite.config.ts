@@ -10,6 +10,11 @@ const proxy: Record<string, ProxyOptions> = {
     target: 'http://localhost:11434',
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/ollama/, ''),
+    // Ollama rejects unknown browser origins (e.g. opening the app via a LAN IP). The request is
+    // server-to-server at this point, so drop the header.
+    configure: (proxyServer) => {
+      proxyServer.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+    },
   },
 };
 
