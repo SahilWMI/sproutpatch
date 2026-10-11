@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_PREFS, isNightTime, nextThemeMode, normalizePrefs, resolveTheme } from './prefs';
+import { DEFAULT_PREFS, isNightTime, nextThemeMode, normalizePrefs, resolveTheme, stepVolume } from './prefs';
 
 const at = (h: number, m = 0) => new Date(2026, 9, 12, h, m);
 
@@ -30,6 +30,18 @@ describe('theme', () => {
     expect(nextThemeMode('auto')).toBe('light');
     expect(nextThemeMode('light')).toBe('dark');
     expect(nextThemeMode('dark')).toBe('auto');
+  });
+});
+
+describe('stepVolume', () => {
+  it('moves in steps of 10% and stays within 0..100%', () => {
+    expect(stepVolume(0.5, 1)).toBe(0.6);
+    expect(stepVolume(0.5, -1)).toBe(0.4);
+    expect(stepVolume(0.95, 1)).toBe(1);
+    expect(stepVolume(1, 1)).toBe(1);
+    expect(stepVolume(0.05, -1)).toBe(0);
+    expect(stepVolume(0, -1)).toBe(0);
+    expect(stepVolume(0.7, 1)).toBe(0.8);
   });
 });
 

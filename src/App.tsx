@@ -3,7 +3,8 @@ import { Layout, type Screen } from './components/Layout';
 import { CheckInScreen } from './components/CheckInScreen';
 import { HistoryScreen } from './components/HistoryScreen';
 import { PreferencesPanel } from './components/PreferencesPanel';
-import { MusicToggle, ThemeToggle } from './components/QuickToggles';
+import { MusicMenu } from './components/MusicMenu';
+import { ThemeToggle } from './components/QuickToggles';
 import { SetupWizard } from './components/SetupWizard';
 import { SproutIcon } from './components/SproutIcon';
 import { WalkFlow } from './components/WalkFlow';
@@ -124,7 +125,7 @@ export default function App() {
       actions={
         <>
           <ThemeToggle mode={prefs.theme} onCycle={() => updatePrefs({ ...prefs, theme: nextThemeMode(prefs.theme) })} />
-          <MusicToggle on={prefs.musicOn} onToggle={toggleMusic} />
+          <MusicMenu prefs={prefs} onChange={updatePrefs} />
         </>
       }
     >
