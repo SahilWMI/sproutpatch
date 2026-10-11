@@ -1,4 +1,4 @@
-import type { TrackId } from '../prefs';
+import type { GeneratedTrackId as TrackId } from '../prefs';
 import { audioRunning, getAudio, unlockAudio } from './audio';
 import { BEATS_PER_BAR, TRACKS, createComposer, midiToHz, type Composer, type NoteEvent } from './composition';
 

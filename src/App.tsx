@@ -11,7 +11,8 @@ import { WalkFlow } from './components/WalkFlow';
 import { config } from './lib/config';
 import type { CheckInEntry } from './lib/entries';
 import { setMasterVolume, unlockAudio } from './lib/music/audio';
-import { music } from './lib/music/player';
+import { customMusic } from './lib/music/customPlayer';
+import { playTrack, stopAllMusic } from './lib/music/soundtrack';
 import { rulesStrategy } from './lib/nudge/rules';
 import { DEFAULT_PREFS, applyTheme, loadPrefs, nextThemeMode, resolveTheme, savePrefs, type Prefs } from './lib/prefs';
 import { pluginAgents } from './lib/registry';
@@ -42,8 +43,8 @@ export default function App() {
   }, [prefs.theme, clock]);
 
   useEffect(() => {
-    if (prefs.musicOn) music.play(prefs.track);
-    else music.stop();
+    if (prefs.musicOn) playTrack(prefs.track);
+    else stopAllMusic();
   }, [prefs.musicOn, prefs.track]);
 
   useEffect(() => {
@@ -52,7 +53,10 @@ export default function App() {
 
   useEffect(() => {
     // Browsers only allow sound after a user gesture; resume on the first one.
-    const unlock = () => unlockAudio();
+    const unlock = () => {
+      unlockAudio();
+      customMusic.resume();
+    };
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('keydown', unlock);
     return () => {

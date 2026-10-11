@@ -4,8 +4,16 @@ import { getSetting, setSetting } from './db';
 export const THEME_MODES = ['auto', 'light', 'dark'] as const;
 export type ThemeMode = (typeof THEME_MODES)[number];
 
-export const TRACK_IDS = ['meadow', 'night-grass'] as const;
+export const GENERATED_TRACK_IDS = ['meadow', 'night-grass'] as const;
+export type GeneratedTrackId = (typeof GENERATED_TRACK_IDS)[number];
+
+/** `custom` plays the user's own audio files. */
+export const TRACK_IDS = [...GENERATED_TRACK_IDS, 'custom'] as const;
 export type TrackId = (typeof TRACK_IDS)[number];
+
+export function isGeneratedTrack(id: TrackId): id is GeneratedTrackId {
+  return id !== 'custom';
+}
 
 const PrefsSchema = z.object({
   theme: z.enum(THEME_MODES),

@@ -1,4 +1,4 @@
-import type { TrackId } from '../prefs';
+import type { GeneratedTrackId as TrackId } from '../prefs';
 
 export interface Track {
   id: TrackId;
