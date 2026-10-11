@@ -1,10 +1,10 @@
 import type { TrackId } from '../prefs';
+import { audioRunning, getAudio, unlockAudio } from './audio';
 import { BEATS_PER_BAR, TRACKS, createComposer, midiToHz, type Composer, type NoteEvent } from './composition';
 
 /** Schedule this far ahead so throttled background tabs keep playing smoothly. */
-const LOOKAHEAD_S = 4;
-const TICK_MS = 500;
-const MASTER_LEVEL = 0.5;
+export const LOOKAHEAD_S = 4;
+export const TICK_MS = 500;
 
 interface Session {
   composer: Composer;
@@ -13,24 +13,12 @@ interface Session {
   nextBarAt: number;
 }
 
-function makeImpulse(ctx: AudioContext, seconds: number): AudioBuffer {
-  const length = Math.floor(ctx.sampleRate * seconds);
-  const buffer = ctx.createBuffer(2, length, ctx.sampleRate);
-  for (let channel = 0; channel < 2; channel++) {
-    const data = buffer.getChannelData(channel);
-    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
-  }
-  return buffer;
-}
-
 /** Calm, generated piano ambience on Web Audio. No audio files are shipped. */
 class AmbientPlayer {
   private ctx: AudioContext | null = null;
-  private master: GainNode | null = null;
   private bus: GainNode | null = null;
   private session: Session | null = null;
   private timer: ReturnType<typeof setInterval> | null = null;
-  private volume = 0.5;
 
   get playing(): boolean {
     return this.session !== null;
@@ -38,42 +26,29 @@ class AmbientPlayer {
 
   /** False while the browser is waiting for a tap before allowing sound. */
   get audible(): boolean {
-    return this.ctx?.state === 'running';
+    return audioRunning();
   }
 
   private ensureContext(): AudioContext | null {
     if (this.ctx) return this.ctx;
-    if (typeof AudioContext === 'undefined') return null;
-    const ctx = new AudioContext();
-    const master = ctx.createGain();
-    master.gain.value = this.volume * MASTER_LEVEL;
-    master.connect(ctx.destination);
-
-    const bus = ctx.createGain();
-    const reverb = ctx.createConvolver();
-    reverb.buffer = makeImpulse(ctx, 3.5);
-    const wet = ctx.createGain();
-    wet.gain.value = 0.5;
-    const dry = ctx.createGain();
+    const audio = getAudio();
+    if (!audio) return null;
+    const bus = audio.ctx.createGain();
+    const dry = audio.ctx.createGain();
     dry.gain.value = 0.75;
-    bus.connect(dry).connect(master);
-    bus.connect(reverb).connect(wet).connect(master);
-
-    this.ctx = ctx;
-    this.master = master;
+    const wet = audio.ctx.createGain();
+    wet.gain.value = 0.8;
+    bus.connect(dry).connect(audio.dry);
+    bus.connect(wet).connect(audio.wet);
+    this.ctx = audio.ctx;
     this.bus = bus;
-    return ctx;
-  }
-
-  /** Call from a user gesture (tap, click, key) so the browser lets audio start. */
-  unlock(): void {
-    if (this.ctx?.state === 'suspended') void this.ctx.resume();
+    return audio.ctx;
   }
 
   play(trackId: TrackId): void {
     const ctx = this.ensureContext();
     if (!ctx || !this.bus) return;
-    this.unlock();
+    unlockAudio();
     this.fadeOutSession();
 
     const track = TRACKS[trackId];
@@ -95,11 +70,6 @@ class AmbientPlayer {
     this.fadeOutSession();
     if (this.timer !== null) clearInterval(this.timer);
     this.timer = null;
-  }
-
-  setVolume(volume: number): void {
-    this.volume = Math.max(0, Math.min(1, volume));
-    if (this.ctx && this.master) this.master.gain.setTargetAtTime(this.volume * MASTER_LEVEL, this.ctx.currentTime, 0.2);
   }
 
   private fadeOutSession(): void {
