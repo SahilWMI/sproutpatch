@@ -100,7 +100,7 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
     <div className="flex flex-1 flex-col">
       <GrassScene
         active={step.kind === 'thinking'}
-        className={composing ? 'min-h-[260px] flex-1' : 'h-[clamp(120px,22dvh,220px)] shrink-0'}
+        className={composing ? 'min-h-[260px] flex-1' : 'min-h-[120px] flex-1'}
       >
         <div className="mx-auto flex h-full max-w-2xl flex-col px-5 pt-6 sm:pt-10">
           <p className="text-sm font-medium text-white/85 [text-shadow:0_1px_8px_rgb(0_0_0/0.45)]">{greeting}</p>
@@ -117,7 +117,7 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
         </div>
       </GrassScene>
 
-      <div className={composing && !saveError ? 'hidden' : 'mx-auto w-full max-w-2xl flex-1 space-y-4 px-4 py-5'}>
+      <div className={composing && !saveError ? 'hidden' : 'mx-auto w-full max-w-2xl shrink-0 space-y-4 px-4 py-5'}>
       {step.kind === 'thinking' && (
         <ThinkingCard
           label={provider ? `Asking ${provider.label}…` : 'Putting together a suggestion…'}
