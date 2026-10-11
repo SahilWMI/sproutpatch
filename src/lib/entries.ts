@@ -72,6 +72,34 @@ export const MOOD_AFTER_OPTIONS = [
   { value: 3, emoji: '😄', label: 'Great' },
 ] as const;
 
+function signOff(now: Date): string {
+  const hour = now.getHours();
+  if (hour >= 5 && hour < 12) return 'Enjoy the rest of the morning.';
+  if (hour >= 12 && hour < 17) return 'Enjoy the rest of the afternoon.';
+  if (hour >= 17 && hour < 21) return 'Enjoy the rest of the evening.';
+  return 'Try to get some rest tonight.';
+}
+
+/** Closing line after a walk: compares how you feel now with how you felt at check-in. */
+export function afterWalkMessage(moodBefore: number, moodAfter: number | null, now: Date): string {
+  const end = signOff(now);
+  if (moodAfter === null) return `Walk saved. ${end}`;
+  const change = moodAfter - moodBefore;
+  if (change >= 1) {
+    return moodAfter >= 1.5
+      ? `You came back feeling better than when you left. Nice work getting out. ${end}`
+      : `A little lighter than before the walk. That counts. ${end}`;
+  }
+  if (change <= -1) {
+    return `Feeling worse than before. That happens, and it's not on you. Go easy on yourself. ${end}`;
+  }
+  if (moodAfter <= -1.5) {
+    return `Still feeling low, and that's okay. You got out anyway, which is not nothing. ${end}`;
+  }
+  if (moodAfter >= 1.5) return `Still in a good place. Glad the walk kept it going. ${end}`;
+  return `About the same as before, and that's fine. Fresh air still did something. ${end}`;
+}
+
 export function moodEmoji(score: number): string {
   if (score <= -2) return '😞';
   if (score < 0) return '🙁';

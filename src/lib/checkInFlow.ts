@@ -59,8 +59,9 @@ export function validateNudge(value: unknown): Nudge | null {
   return { ...parsed.data, minutes: Math.max(1, Math.min(60, Math.round(parsed.data.minutes))) };
 }
 
+/** Changes every second, so back-to-back check-ins don't get word-for-word the same suggestion. */
 export function defaultSeed(now: Date): number {
-  return now.getDate() + now.getHours();
+  return Math.floor(now.getTime() / 1000);
 }
 
 /** Runs any strategy defensively: throws, hangs or junk output all end in the rules nudge. */

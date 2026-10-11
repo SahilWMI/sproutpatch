@@ -1,11 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import { MOOD_AFTER_OPTIONS, entryFromResult } from './entries';
+import { MOOD_AFTER_OPTIONS, afterWalkMessage, entryFromResult } from './entries';
 
 describe('mood-after picker', () => {
   it('has 5 options spanning the same -3..3 scale as mood before', () => {
     expect(MOOD_AFTER_OPTIONS).toHaveLength(5);
     expect(MOOD_AFTER_OPTIONS[0].value).toBe(-3);
     expect(MOOD_AFTER_OPTIONS[4].value).toBe(3);
+  });
+});
+
+describe('afterWalkMessage', () => {
+  const at = (h: number) => new Date(2026, 9, 12, h, 0);
+
+  it('reflects how the mood changed', () => {
+    expect(afterWalkMessage(-2, 1.5, at(10))).toMatch(/better than when you left/);
+    expect(afterWalkMessage(-3, -1.5, at(10))).toMatch(/lighter than before/);
+    expect(afterWalkMessage(1, -1.5, at(10))).toMatch(/worse than before/);
+    expect(afterWalkMessage(-2, -1.5, at(10))).toMatch(/Still feeling low/);
+    expect(afterWalkMessage(2, 1.5, at(10))).toMatch(/Still in a good place/);
+    expect(afterWalkMessage(0, 0, at(10))).toMatch(/About the same/);
+    expect(afterWalkMessage(0, null, at(10))).toMatch(/^Walk saved\./);
+  });
+
+  it('signs off for the time of day', () => {
+    expect(afterWalkMessage(0, 0, at(9))).toMatch(/morning\.$/);
+    expect(afterWalkMessage(0, 0, at(14))).toMatch(/afternoon\.$/);
+    expect(afterWalkMessage(0, 0, at(19))).toMatch(/evening\.$/);
+    expect(afterWalkMessage(0, 0, at(4))).toMatch(/rest tonight\.$/);
   });
 });
 
