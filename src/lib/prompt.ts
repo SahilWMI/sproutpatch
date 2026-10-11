@@ -29,12 +29,15 @@ export function buildCheckInMessages(note: string, attempt = 1): ChatMessage[] {
 }
 
 export const NUDGE_SYSTEM_PROMPT =
-  'You suggest ONE small, concrete outdoor activity. You are given the facts; do not invent weather. Reply ONLY with JSON: {"suggestion": one short sentence, "minutes": integer 5 to 20}.';
+  'You suggest ONE small, concrete outdoor activity of the given length. You are given the facts; do not invent weather or change the length. Reply ONLY with JSON: {"suggestion": one short sentence}.';
 
-export function buildNudgeMessages(facts: string, moodScore: number): ChatMessage[] {
+export function buildNudgeMessages(facts: string, moodScore: number, minutes: number): ChatMessage[] {
   return [
     { role: 'system', content: NUDGE_SYSTEM_PROMPT },
-    { role: 'user', content: `Facts: ${facts}. Mood today on a -3 to 3 scale: ${moodScore}.` },
+    {
+      role: 'user',
+      content: `Facts: ${facts}. Mood today on a -3 to 3 scale: ${moodScore}. Length: ${minutes} minutes.`,
+    },
   ];
 }
 

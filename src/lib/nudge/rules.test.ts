@@ -4,10 +4,12 @@ import {
   VARIANTS,
   buildReason,
   daylightMinutesLeft,
+  minutesForRule,
   pickRule,
   rulesStrategy,
   suggestByRules,
   variantIndex,
+  walkMinutesForMood,
 } from './rules';
 
 // Local-time dates so the formatted clock is predictable in any timezone.
@@ -55,7 +57,7 @@ describe('pickRule', () => {
     expect(pickRule(1, weather(), today(4, 30))).toBe('dark'); // before sunrise
   });
 
-  it('4. mood <= -2 means an easy 15-20 minute walk', () => {
+  it('4. mood <= -2 means an easy, short walk', () => {
     expect(pickRule(-2, weather(), AFTERNOON)).toBe('low-mood');
     expect(pickRule(-3, weather(), AFTERNOON)).toBe('low-mood');
   });
@@ -65,7 +67,7 @@ describe('pickRule', () => {
     expect(pickRule(0, weather(), AFTERNOON)).toBe('meh-mood');
   });
 
-  it('6. otherwise a light, no-pressure loop', () => {
+  it('6. otherwise a longer, no-pressure walk', () => {
     expect(pickRule(1, weather(), AFTERNOON)).toBe('light');
     expect(pickRule(3, weather(), AFTERNOON)).toBe('light');
   });
@@ -84,31 +86,25 @@ describe('wording variants', () => {
     for (const list of Object.values(VARIANTS)) expect(list).toHaveLength(3);
   });
 
-  it('rain variants all mention the rain and suggest five minutes', () => {
-    for (const v of VARIANTS.rain) {
-      expect(v.suggestion).toMatch(/rain/i);
-      expect(v.minutes).toBe(5);
-    }
+  it('rain variants all mention the rain and five minutes', () => {
+    for (const v of VARIANTS.rain) expect(v(5)).toMatch(/rain.*five minutes|five minutes.*rain/i);
   });
 
-  it('low-mood variants are 15-20 minutes with the phone in a pocket', () => {
-    for (const v of VARIANTS['low-mood']) {
-      expect(v.minutes).toBeGreaterThanOrEqual(15);
-      expect(v.minutes).toBeLessThanOrEqual(20);
-      expect(v.suggestion).toMatch(/pocket|tucked/i);
-    }
+  it('low-mood variants keep the phone in a pocket', () => {
+    for (const v of VARIANTS['low-mood']) expect(v(10)).toMatch(/pocket|tucked/i);
   });
 
-  it('meh-mood variants are 10-15 minutes toward green space', () => {
-    for (const v of VARIANTS['meh-mood']) {
-      expect(v.minutes).toBeGreaterThanOrEqual(10);
-      expect(v.minutes).toBeLessThanOrEqual(15);
-      expect(v.suggestion).toMatch(/green|park|trees/i);
-    }
+  it('meh-mood variants head toward green space', () => {
+    for (const v of VARIANTS['meh-mood']) expect(v(30)).toMatch(/green|park|trees/i);
   });
 
-  it('light variants start with the quick loop question', () => {
-    for (const v of VARIANTS.light) expect(v.suggestion).toMatch(/^Quick 5-minute loop/);
+  it('every variant states the walk length it was given', () => {
+    for (const rule of ['heat', 'dark', 'low-mood', 'meh-mood', 'light'] as const) {
+      for (const v of VARIANTS[rule]) {
+        expect(v(15)).toMatch(/15[ -]minute/i);
+        expect(v(60)).toMatch(/an hour|hour-long/i);
+      }
+    }
   });
 
   it('the seed picks the variant deterministically, including negative seeds', () => {
@@ -118,7 +114,32 @@ describe('wording variants', () => {
     const a = suggestByRules({ moodScore: 1, weather: weather(), now: AFTERNOON, seed: 2 });
     const b = suggestByRules({ moodScore: 1, weather: weather(), now: AFTERNOON, seed: 5 });
     expect(a.suggestion).toBe(b.suggestion);
-    expect(a.suggestion).toBe(VARIANTS.light[2].suggestion);
+    expect(a.suggestion).toBe(VARIANTS.light[2](45));
+  });
+});
+
+describe('walk length', () => {
+  it('maps mood to 10, 15, 30, 45 and 60 minutes', () => {
+    expect([-3, -2, -1, 0, 1, 2, 3].map(walkMinutesForMood)).toEqual([10, 10, 15, 30, 45, 45, 60]);
+    expect(walkMinutesForMood(-0.4)).toBe(30);
+    expect(walkMinutesForMood(2.6)).toBe(60);
+  });
+
+  it('mood decides the length on a clear afternoon', () => {
+    const minutesFor = (moodScore: number) => suggestByRules({ moodScore, weather: weather(), now: AFTERNOON, seed: 0 }).minutes;
+    expect(minutesFor(-3)).toBe(10);
+    expect(minutesFor(-1)).toBe(15);
+    expect(minutesFor(0)).toBe(30);
+    expect(minutesFor(1)).toBe(45);
+    expect(minutesFor(3)).toBe(60);
+  });
+
+  it('rain stays a five-minute doorstep break; heat and dark cap at 15', () => {
+    expect(minutesForRule('rain', 3)).toBe(5);
+    expect(minutesForRule('heat', 3)).toBe(15);
+    expect(minutesForRule('dark', 0)).toBe(15);
+    expect(minutesForRule('dark', -3)).toBe(10);
+    expect(suggestByRules({ moodScore: 3, weather: weather(), now: today(21, 0), seed: 0 })).toMatchObject({ rule: 'dark', minutes: 15 });
   });
 });
 
@@ -158,7 +179,7 @@ describe('rulesStrategy', () => {
       seed: 0,
       provider: null,
     });
-    expect(nudge).toMatchObject({ strategyId: 'rules', rule: 'low-mood', minutes: 15 });
+    expect(nudge).toMatchObject({ strategyId: 'rules', rule: 'low-mood', minutes: 10 });
     expect(nudge.reason).toContain('sunset at 5:42 PM');
   });
 });

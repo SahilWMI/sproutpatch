@@ -38,7 +38,10 @@ Everything that matters is deterministic code:
 | 2. Mood estimate | `src/lib/fallbackMood.ts` | Lexicon-based score and themes, used whenever the model isn't. |
 | 3. Reply | `src/lib/runCheckIn.ts` | The one wrapper around every provider: strip code fences, parse, validate with zod, clamp `mood_score` to -3..3, cut the reply to 300 characters, drop sentences that sound like medical or therapy advice, retry once, then fall back to templates with a small "Running without the model" note. Timeout from `VITE_TIMEOUT_MS` (90 s default), a "Local models can take up to a minute" hint after 10 s, and a Cancel button. |
 | 4. Model risk flag | `src/lib/checkInFlow.ts` | If the model says `risk_flag: true`, the app switches to risk mode. The model can raise the alarm, never lower it. |
-| 5. Nudge | `src/lib/nudge/rules.ts` | First matching rule wins: rain ≥ 60% or storms → five minutes at the doorstep or balcony; ≥ 36°C → shade or after sunset; < 20 min of daylight → a lit street or a balcony stretch; mood ≤ -2 → an easy 15-20 minute walk, phone in pocket; mood ≤ 0 → 10-15 minutes to the nearest green space; otherwise a no-pressure "Quick 5-minute loop?". Three wordings per case. Without weather it uses the time of day only and says so. |
+| 5. Nudge | `src/lib/nudge/rules.ts` | First matching rule wins: rain ≥ 60% or storms → five minutes at the doorstep or balcony; ≥ 36°C → shade or after sunset; < 20 min of daylight → a lit street or a balcony stretch; mood ≤ -2 → an easy walk, phone in pocket; mood ≤ 0 → a walk to the nearest green space; otherwise a longer, no-pressure walk. Three wordings per case. Without weather it uses the time of day only and says so. |
+| 6. Walk length | `src/lib/nudge/rules.ts` | Mood sets the length: -3 or -2 → 10 min, -1 → 15, 0 → 30, +1 or +2 → 45, +3 → 60. Rain is always five minutes, and heat or darkness caps it at 15. The "Model wording" strategy may reword the suggestion but never changes the length. |
+
+**Look and sound.** The theme follows the time of day (light baby blue from 6:30 to 18:30, dark navy otherwise). You can pin it to Light or Dark with the header button or in Settings. The music button plays calm, generated piano in the spirit of Minecraft's ambient tracks. It's original music synthesised with Web Audio (`src/lib/music/`), not C418's recordings, and no audio files are shipped. Turn it off any time, including from the walk timer.
 
 Weather comes from [Open-Meteo](https://open-meteo.com/) (no API key). Only your coordinates are sent, rounded to about 1 km. Location comes from the browser, or from `VITE_DEFAULT_LAT` / `VITE_DEFAULT_LON` if you decline.
 
@@ -83,7 +86,7 @@ The only network requests are to your model server (Ollama on localhost by defau
 ## Try these four inputs
 
 1. **A bad work day:** `Rough day at work. Meetings ran over, I skipped lunch, and my manager moved the deadline up. Pretty tired.` Expect a low mood and a short-walk nudge. Heads-up: in testing, `gemma3:1b` often set `risk_flag: true` on ordinary bad days, which shows the support card (with a note that the model flagged it). That is the cautious direction by design. With the Mock provider or "No model" you'll see the nudge.
-2. **A calm day:** `Calm day. Read a book on the balcony, made tea, called my sister. Feeling pretty good.` Expect a warm reply and a light "Quick 5-minute loop?" (or a weather or daylight rule if those apply where you are).
+2. **A calm day:** `Calm day. Read a book on the balcony, made tea, called my sister. Feeling pretty good.` Expect a warm reply and a no-pressure 45-minute walk (or a weather or daylight rule if those apply where you are).
 3. **A rainy-day note:** `Rainy day, stuck indoors. A bit bored but okay.` The rain rule only fires if Open-Meteo says rain is likely where you are, because nudges come from real weather, not from your words.
 4. **Crisis language (verifies the safety path):** `I can't go on like this anymore.` The support card appears immediately; the model is never called and only a mood score plus a risk marker are saved.
 

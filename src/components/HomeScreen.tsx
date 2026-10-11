@@ -36,7 +36,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-2xl space-y-2">
-      <div className="flex items-end gap-2 rounded-3xl border border-stone-300 bg-white p-1.5 pl-4 shadow-lg shadow-stone-900/5 focus-within:border-sprout-500 dark:border-stone-700 dark:bg-stone-900 dark:shadow-black/30">
+      <div className="flex items-end gap-2 rounded-3xl border border-mist-300 bg-white p-1.5 pl-4 shadow-lg shadow-mist-900/5 focus-within:border-sprout-500 dark:border-mist-700 dark:bg-mist-900 dark:shadow-black/30">
         <label htmlFor="note" className="sr-only">
           How's today going?
         </label>
@@ -48,7 +48,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
           onKeyDown={handleKeyDown}
           rows={1}
           placeholder="How's today going?"
-          className="max-h-40 min-h-11 flex-1 resize-none bg-transparent py-2.5 text-base leading-6 text-stone-800 outline-none placeholder:text-stone-400 dark:text-stone-100"
+          className="max-h-40 min-h-11 flex-1 resize-none bg-transparent py-2.5 text-base leading-6 text-mist-800 outline-none placeholder:text-mist-400 dark:text-mist-100"
           disabled={busy}
           enterKeyHint="send"
         />
@@ -63,7 +63,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
           </svg>
         </button>
       </div>
-      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-stone-500 dark:text-stone-400">
+      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-mist-500 dark:text-mist-400">
         <span>🔒 Runs locally. Your entries never leave this device.</span>
         <span className="hidden sm:inline">Enter to send · Shift + Enter for a new line</span>
       </p>

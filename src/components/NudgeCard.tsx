@@ -24,9 +24,9 @@ export function NudgeCard({ reply, nudge, replySource, fallbackReason, strategyN
   return (
     <section className="space-y-4" aria-labelledby="nudge-heading">
       <div className="card">
-        <p className="text-lg leading-relaxed text-stone-800 dark:text-stone-100">{reply}</p>
+        <p className="text-lg leading-relaxed text-mist-800 dark:text-mist-100">{reply}</p>
         {replySource === 'fallback' && (
-          <p className="mt-3 text-xs text-stone-400 dark:text-stone-500">{FALLBACK_NOTES[fallbackReason ?? 'no-provider']}</p>
+          <p className="mt-3 text-xs text-mist-400 dark:text-mist-500">{FALLBACK_NOTES[fallbackReason ?? 'no-provider']}</p>
         )}
       </div>
 
@@ -38,7 +38,7 @@ export function NudgeCard({ reply, nudge, replySource, fallbackReason, strategyN
               {nudge.suggestion}
             </h2>
             <p className="text-sm text-sprout-800 dark:text-sprout-300">{nudge.reason}</p>
-            {strategyNotice && <p className="text-xs text-stone-500 dark:text-stone-400">{strategyNotice}</p>}
+            {strategyNotice && <p className="text-xs text-mist-500 dark:text-mist-400">{strategyNotice}</p>}
           </div>
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row">

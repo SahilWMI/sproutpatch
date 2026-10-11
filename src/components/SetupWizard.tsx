@@ -29,7 +29,7 @@ type TestState =
 
 function Code({ children }: { children: ReactNode }) {
   return (
-    <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-[0.85em] text-stone-800 dark:bg-stone-800 dark:text-stone-100">
+    <code className="rounded bg-mist-100 px-1.5 py-0.5 font-mono text-[0.85em] text-mist-800 dark:bg-mist-800 dark:text-mist-100">
       {children}
     </code>
   );
@@ -136,7 +136,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
       <header className="flex items-start gap-3">
         <SproutIcon className="h-10 w-10 shrink-0 text-sprout-600 dark:text-sprout-400" />
         <div>
-          <h1 className="text-2xl font-semibold text-stone-800 dark:text-stone-100">
+          <h1 className="text-2xl font-semibold text-mist-800 dark:text-mist-100">
             {firstRun ? 'Bring your own Gemma' : 'Settings'}
           </h1>
           <p className="muted">
@@ -155,7 +155,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               className={`flex cursor-pointer gap-3 rounded-xl border p-3 text-sm transition-colors ${
                 draft.providerId === opt.id
                   ? 'border-sprout-500 bg-sprout-50 dark:border-sprout-500 dark:bg-sprout-950'
-                  : 'border-stone-200 hover:bg-stone-50 dark:border-stone-700 dark:hover:bg-stone-800'
+                  : 'border-mist-200 hover:bg-mist-50 dark:border-mist-700 dark:hover:bg-mist-800'
               }`}
             >
               <input
@@ -168,7 +168,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
               <span>
                 <span className="block font-medium">{opt.label}</span>
-                <span className="text-stone-500 dark:text-stone-400">{opt.hint}</span>
+                <span className="text-mist-500 dark:text-mist-400">{opt.hint}</span>
               </span>
             </label>
           ))}
@@ -193,7 +193,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           )}
 
           {tags.status === 'error' && (
-            <div className="space-y-3 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100" role="status">
+            <div className="space-y-3 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-300/10 dark:text-amber-100" role="status">
               <p className="font-medium">Can't reach Ollama yet.</p>
               <ol className="list-decimal space-y-1.5 pl-5">
                 <li>
@@ -212,7 +212,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           )}
 
           {tags.status === 'ok' && tags.models.length === 0 && (
-            <div className="space-y-2 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100" role="status">
+            <div className="space-y-2 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-300/10 dark:text-amber-100" role="status">
               <p className="font-medium">Ollama is running, but no models are installed.</p>
               <p>
                 Run <Code>ollama pull gemma3:1b</Code>, then press "Check again".
@@ -227,7 +227,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               {tags.models.map((m) => (
                 <label
                   key={m.name}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-sm hover:bg-stone-50 dark:hover:bg-stone-800"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-sm hover:bg-mist-50 dark:hover:bg-mist-800"
                 >
                   <input
                     type="radio"
@@ -237,7 +237,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
                     className="accent-sprout-600"
                   />
                   <span className="font-mono">{m.name}</span>
-                  <span className="text-xs text-stone-500 dark:text-stone-400">
+                  <span className="text-xs text-mist-500 dark:text-mist-400">
                     {[m.parameterSize, formatSize(m.sizeBytes)].filter(Boolean).join(' · ')}
                   </span>
                   {isGemma(m.name) && (
@@ -291,7 +291,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
             />
           </div>
           {remote && (
-            <p className="rounded-xl bg-amber-50 p-3 text-sm font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-100" role="alert">
+            <p className="rounded-xl bg-amber-50 p-3 text-sm font-medium text-amber-900 dark:bg-amber-300/10 dark:text-amber-100" role="alert">
               ⚠️ Your check-in text will be sent to this server.
             </p>
           )}
@@ -323,7 +323,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
               />
             </div>
           </div>
-          <p className="text-xs text-stone-500 dark:text-stone-400">The key is stored in this browser's IndexedDB only.</p>
+          <p className="text-xs text-mist-500 dark:text-mist-400">The key is stored in this browser's IndexedDB only.</p>
         </section>
       )}
 
@@ -374,7 +374,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           Weather and daylight always come from real data. The safety check runs before any of this and cannot be changed here.
         </p>
         {registry.skipped.length > 0 && (
-          <details className="text-xs text-stone-500 dark:text-stone-400">
+          <details className="text-xs text-mist-500 dark:text-mist-400">
             <summary>Some files in src/agents were skipped</summary>
             <ul className="mt-1 list-disc pl-5">
               {registry.skipped.map((s) => (

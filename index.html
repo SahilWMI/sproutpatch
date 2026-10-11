@@ -4,9 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/sprout.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-    <meta name="theme-color" content="#f5f5f4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1c1917" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#edf6fe" />
     <meta name="color-scheme" content="light dark" />
+    <script>
+      // Auto theme before first paint; the saved preference is applied once IndexedDB loads.
+      (function () {
+        var d = new Date();
+        var m = d.getHours() * 60 + d.getMinutes();
+        if (m < 390 || m >= 1110) {
+          document.documentElement.classList.add('dark');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f2140');
+        }
+      })();
+    </script>
     <meta name="description" content="A local-first daily check-in that nudges you outside." />
     <title>Sproutpatch</title>
   </head>

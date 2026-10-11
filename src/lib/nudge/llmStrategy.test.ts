@@ -27,12 +27,18 @@ const input = (overrides: Partial<NudgeInput> = {}): NudgeInput => ({
 });
 
 describe('llm strategy', () => {
-  it('uses model wording but keeps the code-made reason and clamps minutes', async () => {
+  it('uses model wording but keeps the code-made reason and mood-tier minutes', async () => {
     const provider = providerReturning('{"suggestion": "Walk to the banyan tree by the lake.", "minutes": 45}');
     const nudge = await llmStrategy.suggest(input({ provider }));
     expect(nudge).toMatchObject({ strategyId: 'llm', rule: 'meh-mood', suggestion: 'Walk to the banyan tree by the lake.', minutes: 15 });
     expect(nudge.reason).toMatch(/^Dry, 22°C/);
     expect(provider.checkIn.mock.calls[0]?.[1]).toMatchObject({ task: 'nudge' });
+    expect(JSON.stringify(provider.checkIn.mock.calls[0]?.[1].messages)).toContain('Length: 15 minutes');
+  });
+
+  it('accepts an answer without minutes', async () => {
+    const provider = providerReturning('{"suggestion": "Walk to the banyan tree by the lake."}');
+    expect(await llmStrategy.suggest(input({ provider }))).toMatchObject({ strategyId: 'llm', minutes: 15 });
   });
 
   it.each([
