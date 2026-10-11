@@ -10,18 +10,9 @@ export const LLM_NUDGE_TIMEOUT_MS = 30_000;
 /** Weather and daylight rules are hard limits; the model may only reword mood-based nudges. */
 const LOCKED_RULES: ReadonlySet<NudgeRuleId> = new Set(['rain', 'heat', 'dark']);
 
-const MINUTES_RANGE: Record<NudgeRuleId, [number, number]> = {
-  rain: [5, 5],
-  heat: [10, 10],
-  dark: [10, 10],
-  'low-mood': [15, 20],
-  'meh-mood': [10, 15],
-  light: [5, 10],
-};
-
 const NudgeAnswerSchema = z.object({
   suggestion: z.string().trim().min(3).max(400),
-  minutes: z.number().finite(),
+  minutes: z.number().finite().optional(),
 });
 
 function parseAnswer(raw: unknown): z.infer<typeof NudgeAnswerSchema> | null {
@@ -54,7 +45,7 @@ export const llmStrategy: NudgeStrategy = {
         (signal) =>
           provider.checkIn(facts, {
             task: 'nudge',
-            messages: buildNudgeMessages(facts, input.moodScore),
+            messages: buildNudgeMessages(facts, input.moodScore, base.minutes),
             signal,
             attempt: 1,
           }),
@@ -65,13 +56,8 @@ export const llmStrategy: NudgeStrategy = {
       if (!answer) return base;
       const suggestion = truncateReply(stripAdvice(answer.suggestion.replace(/\s+/g, ' ')), 200);
       if (!suggestion) return base;
-      const [min, max] = MINUTES_RANGE[base.rule];
-      return {
-        ...base,
-        strategyId: 'llm',
-        suggestion,
-        minutes: Math.max(min, Math.min(max, Math.round(answer.minutes))),
-      };
+      // The walk length always comes from the mood tier in the rules, never from the model.
+      return { ...base, strategyId: 'llm', suggestion };
     } catch {
       return base;
     }

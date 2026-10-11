@@ -34,10 +34,10 @@ export function MoodChart({ points }: MoodChartProps) {
               x2={W - PAD.right}
               y1={y(v)}
               y2={y(v)}
-              className="stroke-stone-200 dark:stroke-stone-800"
+              className="stroke-mist-200 dark:stroke-mist-800"
               strokeDasharray={v === 0 ? undefined : '4 4'}
             />
-            <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-stone-400 text-[15px] sm:text-[11px]">
+            <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-mist-400 text-[15px] sm:text-[11px]">
               {v > 0 ? `+${v}` : v}
             </text>
           </g>
@@ -53,19 +53,19 @@ export function MoodChart({ points }: MoodChartProps) {
               strokeLinecap="round"
               className={p.after >= p.before ? 'stroke-sprout-300 dark:stroke-sprout-700' : 'stroke-amber-300 dark:stroke-amber-700'}
             />
-            <circle cx={x(i)} cy={y(p.before)} r={5} className="fill-stone-400 dark:fill-stone-500" />
+            <circle cx={x(i)} cy={y(p.before)} r={5} className="fill-mist-400 dark:fill-mist-500" />
             <circle cx={x(i)} cy={y(p.after)} r={5} className="fill-sprout-600 dark:fill-sprout-400" />
             {(points.length <= 7 || i % 2 === 0) && (
-              <text x={x(i)} y={H - 8} textAnchor="middle" className="fill-stone-400 text-[15px] sm:text-[11px]">
+              <text x={x(i)} y={H - 8} textAnchor="middle" className="fill-mist-400 text-[15px] sm:text-[11px]">
                 {fmt(p.date)}
               </text>
             )}
           </g>
         ))}
       </svg>
-      <figcaption className="flex gap-4 text-xs text-stone-500 dark:text-stone-400">
+      <figcaption className="flex gap-4 text-xs text-mist-500 dark:text-mist-400">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-stone-400" aria-hidden="true" /> Before
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-mist-400" aria-hidden="true" /> Before
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-sprout-600 dark:bg-sprout-400" aria-hidden="true" /> After

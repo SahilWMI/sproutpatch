@@ -117,7 +117,7 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
       {step.kind === 'risk' && <RiskCard trigger={step.trigger} onDone={reset} />}
       {step.kind === 'skipped' && (
         <div className="card space-y-3 text-center">
-          <p className="text-stone-700 dark:text-stone-200">No problem. Your check-in is saved.</p>
+          <p className="text-mist-700 dark:text-mist-200">No problem. Your check-in is saved.</p>
           <button type="button" className="btn-secondary" onClick={reset}>
             New check-in
           </button>
@@ -130,9 +130,9 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
       )}
       </div>
 
-      <div className="sticky bottom-0 z-20 border-t border-stone-200/70 bg-stone-50/90 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md dark:border-stone-800/70 dark:bg-stone-950/85">
+      <div className="sticky bottom-0 z-20 border-t border-mist-200/70 bg-mist-50/90 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md dark:border-mist-800/70 dark:bg-mist-950/85">
         {composing && <Composer onSubmit={handleSubmit} />}
-        <p className={`text-center text-[11px] text-stone-400 dark:text-stone-500 ${composing ? 'mt-1' : ''}`}>
+        <p className={`text-center text-[11px] text-mist-400 dark:text-mist-500 ${composing ? 'mt-1' : ''}`}>
           Sproutpatch is not a therapist or a medical tool.
         </p>
       </div>

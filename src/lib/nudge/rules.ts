@@ -3,6 +3,8 @@ import type { Nudge, NudgeInput, NudgeRuleId, NudgeStrategy, WeatherSnapshot } f
 export const RAIN_PROBABILITY_THRESHOLD = 60;
 export const HEAT_THRESHOLD_C = 36;
 export const DUSK_THRESHOLD_MINUTES = 20;
+export const RAIN_MINUTES = 5;
+export const SHORT_WALK_CAP_MINUTES = 15;
 
 /** WMO codes: 65/67 heavy (freezing) rain, 81/82 heavy/violent showers, 95-99 thunderstorms. */
 const HEAVY_RAIN_CODES = new Set([65, 67, 81, 82]);
@@ -26,41 +28,68 @@ export function formatClock(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
-interface Variant {
-  suggestion: string;
-  minutes: number;
+/** Walk length by mood: 10, 15, 30, 45 or 60 minutes from the lowest mood to the highest. */
+export function walkMinutesForMood(moodScore: number): number {
+  const mood = Math.round(moodScore);
+  if (mood <= -2) return 10;
+  if (mood === -1) return 15;
+  if (mood === 0) return 30;
+  if (mood <= 2) return 45;
+  return 60;
 }
+
+/** Rain is a fixed doorstep break; heat and darkness keep the walk short; otherwise mood decides. */
+export function minutesForRule(rule: NudgeRuleId, moodScore: number): number {
+  if (rule === 'rain') return RAIN_MINUTES;
+  const tier = walkMinutesForMood(moodScore);
+  if (rule === 'heat' || rule === 'dark') return Math.min(tier, SHORT_WALK_CAP_MINUTES);
+  return tier;
+}
+
+export function formatSpan(minutes: number): string {
+  return minutes >= 60 ? 'an hour' : `${minutes} minutes`;
+}
+
+function adjective(minutes: number): string {
+  return minutes >= 60 ? 'hour-long' : `${minutes}-minute`;
+}
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+type Variant = (minutes: number) => string;
 
 export const VARIANTS: Record<NudgeRuleId, readonly [Variant, Variant, Variant]> = {
   rain: [
-    { suggestion: "Rain's on the way, so step out to your doorstep or balcony for five minutes of fresh air.", minutes: 5 },
-    { suggestion: 'Open the door, stand under the porch or balcony, and listen to the rain for five minutes.', minutes: 5 },
-    { suggestion: "Rainy one today. Five minutes of fresh air at the doorstep or on the balcony still counts.", minutes: 5 },
+    () => "Rain's on the way, so step out to your doorstep or balcony for five minutes of fresh air.",
+    () => 'Open the door, stand under the porch or balcony, and listen to the rain for five minutes.',
+    () => 'Rainy one today. Five minutes of fresh air at the doorstep or on the balcony still counts.',
   ],
   heat: [
-    { suggestion: "It's very hot. Find a shady spot outside for ten minutes, or save a short walk for after sunset.", minutes: 10 },
-    { suggestion: 'Too hot for a real walk. Sit somewhere shaded for ten minutes, with water, or walk once the sun is down.', minutes: 10 },
-    { suggestion: 'Skip the midday heat: a slow ten minutes in the shade now, or a short loop after sunset.', minutes: 10 },
+    (m) => `It's very hot. Find a shady spot outside for ${formatSpan(m)}, or save a longer walk for after sunset.`,
+    (m) => `Too hot for a real walk. Sit somewhere shaded for ${formatSpan(m)}, with water, or walk once the sun is down.`,
+    (m) => `Skip the heat: spend ${formatSpan(m)} in the shade now, or take a proper walk after sunset.`,
   ],
   dark: [
-    { suggestion: "It's dark, or close to it. Take a short walk on a well-lit street, or do a stretch on the balcony.", minutes: 10 },
-    { suggestion: 'Ten easy minutes along a lit street, or a balcony stretch if you would rather stay close.', minutes: 10 },
-    { suggestion: 'Stick to the streetlights: a short loop nearby, or step onto the balcony and stretch.', minutes: 10 },
+    (m) => `It's dark, or close to it. Take a ${adjective(m)} walk on a well-lit street, or do a stretch on the balcony.`,
+    (m) => `About ${formatSpan(m)} along a lit street, or a balcony stretch if you would rather stay close.`,
+    (m) => `Stick to the streetlights: a ${adjective(m)} loop nearby, or step onto the balcony and stretch.`,
   ],
   'low-mood': [
-    { suggestion: 'An easy 15-minute walk, phone in your pocket. No destination needed.', minutes: 15 },
-    { suggestion: 'Twenty slow minutes outside, phone in pocket. Just notice what is around you.', minutes: 20 },
-    { suggestion: 'Walk for about 15 minutes at whatever pace feels okay, phone tucked away.', minutes: 15 },
+    (m) => `An easy ${adjective(m)} walk, phone in your pocket. No destination needed.`,
+    (m) => `${capitalize(formatSpan(m))} of slow walking, phone in pocket. Just notice what is around you.`,
+    (m) => `Walk for about ${formatSpan(m)} at whatever pace feels okay, phone tucked away.`,
   ],
   'meh-mood': [
-    { suggestion: 'A 10-minute walk to the nearest bit of green: a park, a tree-lined street, even a hedge.', minutes: 10 },
-    { suggestion: 'Head for the closest green space and back, about 15 minutes.', minutes: 15 },
-    { suggestion: 'Twelve minutes or so to the nearest park or patch of trees, then home.', minutes: 12 },
+    (m) => `A ${adjective(m)} walk to the nearest bit of green: a park, a tree-lined street, even a hedge.`,
+    (m) => `Head for the closest green space and wander for ${formatSpan(m)}.`,
+    (m) => `About ${formatSpan(m)} out to the nearest park or patch of trees, then home.`,
   ],
   light: [
-    { suggestion: 'Quick 5-minute loop? No pressure.', minutes: 5 },
-    { suggestion: 'Quick 5-minute loop around the block? Only if you feel like it.', minutes: 5 },
-    { suggestion: 'Quick 5-minute loop? Totally optional, the day is already going fine.', minutes: 5 },
+    (m) => `Good day for a proper walk: ${formatSpan(m)}, anywhere that looks nice. No pressure.`,
+    (m) => `How about a ${adjective(m)} walk? Pick a route you haven't tried. No pressure.`,
+    (m) => `You've got energy today. Take it outside for ${formatSpan(m)}, at your own pace.`,
   ],
 };
 
@@ -121,12 +150,12 @@ export function variantIndex(seed: number): 0 | 1 | 2 {
 
 export function suggestByRules(input: Pick<NudgeInput, 'moodScore' | 'weather' | 'now' | 'seed'>): Nudge {
   const rule = pickRule(input.moodScore, input.weather, input.now);
-  const variant = VARIANTS[rule][variantIndex(input.seed)];
+  const minutes = minutesForRule(rule, input.moodScore);
   return {
     strategyId: 'rules',
     rule,
-    suggestion: variant.suggestion,
-    minutes: variant.minutes,
+    suggestion: VARIANTS[rule][variantIndex(input.seed)](minutes),
+    minutes,
     reason: buildReason(input.weather, input.now),
   };
 }

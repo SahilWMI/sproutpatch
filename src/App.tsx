@@ -2,12 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { Layout, type Screen } from './components/Layout';
 import { CheckInScreen } from './components/CheckInScreen';
 import { HistoryScreen } from './components/HistoryScreen';
+import { PreferencesPanel } from './components/PreferencesPanel';
+import { MusicToggle, ThemeToggle } from './components/QuickToggles';
 import { SetupWizard } from './components/SetupWizard';
 import { SproutIcon } from './components/SproutIcon';
 import { WalkFlow } from './components/WalkFlow';
 import { config } from './lib/config';
 import type { CheckInEntry } from './lib/entries';
+import { music } from './lib/music/player';
 import { rulesStrategy } from './lib/nudge/rules';
+import { DEFAULT_PREFS, applyTheme, loadPrefs, nextThemeMode, resolveTheme, savePrefs, type Prefs } from './lib/prefs';
 import { pluginAgents } from './lib/registry';
 import { defaultSettings, loadSettings, resolveProvider, resolveStrategy, saveSettings, type AppSettings } from './lib/settings';
 
@@ -18,9 +22,47 @@ export default function App() {
   // Bumped to remount the check-in screen with a fresh, empty form.
   const [checkInKey, setCheckInKey] = useState(0);
 
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const [clock, setClock] = useState(() => new Date());
+
   useEffect(() => {
     void loadSettings().then(setSettings);
+    void loadPrefs().then(setPrefs);
   }, []);
+
+  useEffect(() => {
+    applyTheme(resolveTheme(prefs.theme, clock));
+    if (prefs.theme !== 'auto') return;
+    const timer = setInterval(() => setClock(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, [prefs.theme, clock]);
+
+  useEffect(() => {
+    if (prefs.musicOn) music.play(prefs.track);
+    else music.stop();
+  }, [prefs.musicOn, prefs.track]);
+
+  useEffect(() => {
+    music.setVolume(prefs.volume);
+  }, [prefs.volume]);
+
+  useEffect(() => {
+    // Browsers only allow sound after a user gesture; resume on the first one.
+    const unlock = () => music.unlock();
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, []);
+
+  function updatePrefs(next: Prefs) {
+    setPrefs(next);
+    void savePrefs(next);
+  }
+
+  const toggleMusic = () => updatePrefs({ ...prefs, musicOn: !prefs.musicOn });
 
   const provider = useMemo(() => (settings ? resolveProvider(settings, pluginAgents) : null), [settings]);
   const strategy = useMemo(() => (settings ? resolveStrategy(settings, pluginAgents) : rulesStrategy), [settings]);
@@ -52,6 +94,8 @@ export default function App() {
     return (
       <WalkFlow
         entry={walkEntry}
+        musicOn={prefs.musicOn}
+        onToggleMusic={toggleMusic}
         onExit={() => {
           setWalkEntry(null);
           navigate('home');
@@ -63,7 +107,17 @@ export default function App() {
   const firstRun = !settings.setupDone;
 
   return (
-    <Layout screen={screen} onNavigate={navigate} fullBleed={screen === 'home' && !firstRun}>
+    <Layout
+      screen={screen}
+      onNavigate={navigate}
+      fullBleed={screen === 'home' && !firstRun}
+      actions={
+        <>
+          <ThemeToggle mode={prefs.theme} onCycle={() => updatePrefs({ ...prefs, theme: nextThemeMode(prefs.theme) })} />
+          <MusicToggle on={prefs.musicOn} onToggle={toggleMusic} />
+        </>
+      }
+    >
       {screen === 'home' && firstRun && <SetupWizard initial={settings} registry={pluginAgents} firstRun onSave={handleSave} />}
       {screen === 'home' && !firstRun && (
         <CheckInScreen
@@ -75,7 +129,12 @@ export default function App() {
         />
       )}
       {screen === 'history' && <HistoryScreen onDataDeleted={() => setSettings(defaultSettings())} />}
-      {screen === 'settings' && <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />}
+      {screen === 'settings' && (
+        <>
+          <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />
+          <PreferencesPanel prefs={prefs} onChange={updatePrefs} />
+        </>
+      )}
     </Layout>
   );
 }

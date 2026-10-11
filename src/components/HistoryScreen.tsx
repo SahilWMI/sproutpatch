@@ -80,7 +80,7 @@ export function HistoryScreen({ onDataDeleted }: HistoryScreenProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-stone-800 dark:text-stone-100">History</h1>
+        <h1 className="text-2xl font-semibold text-mist-800 dark:text-mist-100">History</h1>
         <button type="button" className="btn-secondary" onClick={() => setShowSample((s) => !s)} aria-pressed={showSample}>
           {showSample ? 'Back to my data' : 'Try a sample day'}
         </button>
@@ -156,11 +156,11 @@ export function HistoryScreen({ onDataDeleted }: HistoryScreenProps) {
                     {isCompletedWalk(e) ? (
                       <SproutIcon className="h-7 w-7 text-sprout-600 dark:text-sprout-400" title="Walk completed" />
                     ) : (
-                      <span className="block h-7 w-7 rounded-full border-2 border-dashed border-stone-300 dark:border-stone-700" aria-hidden="true" />
+                      <span className="block h-7 w-7 rounded-full border-2 border-dashed border-mist-300 dark:border-mist-700" aria-hidden="true" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="text-xs text-stone-500 dark:text-stone-400">{formatDate(e.createdAt)}</p>
+                    <p className="text-xs text-mist-500 dark:text-mist-400">{formatDate(e.createdAt)}</p>
                     {e.kind === 'risk' ? (
                       <p className="text-sm">
                         Mood {moodLabel(e.moodBefore)} · <span className="text-amber-700 dark:text-amber-300">Support info shown</span>
@@ -177,13 +177,13 @@ export function HistoryScreen({ onDataDeleted }: HistoryScreenProps) {
                             </>
                           )}
                         </p>
-                        {e.sample && <p className="truncate text-sm text-stone-600 dark:text-stone-300">{e.note}</p>}
+                        {e.sample && <p className="truncate text-sm text-mist-600 dark:text-mist-300">{e.note}</p>}
                         {e.themes.length > 0 && (
                           <ul className="flex flex-wrap gap-1" aria-label="Themes">
                             {e.themes.map((t) => (
                               <li
                                 key={t}
-                                className="rounded-full bg-stone-100 px-2 py-0.5 text-xs text-stone-600 dark:bg-stone-800 dark:text-stone-300"
+                                className="rounded-full bg-mist-100 px-2 py-0.5 text-xs text-mist-600 dark:bg-mist-800 dark:text-mist-300"
                               >
                                 {t}
                               </li>
@@ -214,7 +214,7 @@ export function HistoryScreen({ onDataDeleted }: HistoryScreenProps) {
           </button>
         </div>
         {message && (
-          <p className="text-sm text-stone-600 dark:text-stone-300" role="status">
+          <p className="text-sm text-mist-600 dark:text-mist-300" role="status">
             {message}
           </p>
         )}
