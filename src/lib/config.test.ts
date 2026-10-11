@@ -11,7 +11,13 @@ describe('readConfig', () => {
       timeoutMs: DEFAULT_TIMEOUT_MS,
       defaultLat: DEFAULT_LAT,
       defaultLon: DEFAULT_LON,
+      hosted: false,
     });
+  });
+
+  it('only treats VITE_HOSTED=true as hosted', () => {
+    expect(readConfig({ VITE_HOSTED: 'true' }).hosted).toBe(true);
+    expect(readConfig({ VITE_HOSTED: 'yes' }).hosted).toBe(false);
   });
 
   it('reads and trims provided values', () => {
