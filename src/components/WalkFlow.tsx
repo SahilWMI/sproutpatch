@@ -93,7 +93,7 @@ export function WalkFlow({ entry, musicOn, onToggleMusic, onExit }: WalkFlowProp
           <p className="font-mono text-6xl font-light tabular-nums text-mist-500 sm:text-7xl" aria-hidden="true">
             {finished ? '0:00' : formatRemaining(remaining)}
           </p>
-          <p className="max-w-xs text-sm text-mist-600">
+          <p className="max-w-sm text-lg text-mist-300 sm:text-xl">
             {finished ? "That's the time. Head back whenever you like." : 'Put the phone away. This page will wait.'}
           </p>
           <button

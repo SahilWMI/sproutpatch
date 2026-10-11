@@ -63,7 +63,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
           </svg>
         </button>
       </div>
-      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] text-mist-700 dark:text-mist-400">
+      <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-sm text-mist-700 dark:text-mist-400">
         <span>🔒 Runs locally. Your entries never leave this device.</span>
         <span className="hidden sm:inline">Enter to send · Shift + Enter for a new line</span>
       </p>
