@@ -63,18 +63,19 @@ export function entryFromResult(note: string, result: CheckInFlowResult, now: Da
   };
 }
 
+/** Absolute "how do you feel now", on the same -3..3 scale as moodBefore so the change is comparable. */
 export const MOOD_AFTER_OPTIONS = [
-  { value: -2, emoji: '😞', label: 'Worse' },
-  { value: -1, emoji: '🙁', label: 'A bit worse' },
-  { value: 0, emoji: '😐', label: 'About the same' },
-  { value: 1, emoji: '🙂', label: 'A bit better' },
-  { value: 2, emoji: '😄', label: 'Much better' },
+  { value: -3, emoji: '😞', label: 'Rough' },
+  { value: -1.5, emoji: '🙁', label: 'Low' },
+  { value: 0, emoji: '😐', label: 'Okay' },
+  { value: 1.5, emoji: '🙂', label: 'Good' },
+  { value: 3, emoji: '😄', label: 'Great' },
 ] as const;
 
 export function moodEmoji(score: number): string {
   if (score <= -2) return '😞';
   if (score < 0) return '🙁';
   if (score === 0) return '😐';
-  if (score < 2) return '🙂';
+  if (score < 3) return '🙂';
   return '😄';
 }

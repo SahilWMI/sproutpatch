@@ -11,7 +11,7 @@ export function defaultCoordinates(): Coordinates {
 }
 
 /** Browser geolocation with a short timeout; falls back to VITE_DEFAULT_LAT/LON. */
-export function getCoordinates(timeoutMs = 8000): Promise<Coordinates> {
+export function getCoordinates(timeoutMs = 5000): Promise<Coordinates> {
   if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
     return Promise.resolve(defaultCoordinates());
   }

@@ -1,17 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layout, type Screen } from './components/Layout';
 import { CheckInScreen } from './components/CheckInScreen';
+import { HistoryScreen } from './components/HistoryScreen';
 import { SetupWizard } from './components/SetupWizard';
 import { SproutIcon } from './components/SproutIcon';
+import { WalkFlow } from './components/WalkFlow';
 import { config } from './lib/config';
+import type { CheckInEntry } from './lib/entries';
 import { rulesStrategy } from './lib/nudge/rules';
 import { pluginAgents } from './lib/registry';
-import { loadSettings, resolveProvider, resolveStrategy, saveSettings, type AppSettings } from './lib/settings';
+import { defaultSettings, loadSettings, resolveProvider, resolveStrategy, saveSettings, type AppSettings } from './lib/settings';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [settings, setSettings] = useState<AppSettings | null>(null);
-  const [walkNotice, setWalkNotice] = useState(false);
+  const [walkEntry, setWalkEntry] = useState<CheckInEntry | null>(null);
+  // Bumped to remount the check-in screen with a fresh, empty form.
+  const [checkInKey, setCheckInKey] = useState(0);
 
   useEffect(() => {
     void loadSettings().then(setSettings);
@@ -30,6 +35,11 @@ export default function App() {
     if (screen !== 'settings') setScreen('home');
   }
 
+  function navigate(next: Screen) {
+    if (next === 'home') setCheckInKey((k) => k + 1);
+    setScreen(next);
+  }
+
   if (!settings) {
     return (
       <div className="flex min-h-dvh items-center justify-center" role="status">
@@ -38,28 +48,34 @@ export default function App() {
     );
   }
 
+  if (walkEntry) {
+    return (
+      <WalkFlow
+        entry={walkEntry}
+        onExit={() => {
+          setWalkEntry(null);
+          navigate('home');
+        }}
+      />
+    );
+  }
+
   const firstRun = !settings.setupDone;
 
   return (
-    <Layout screen={screen} onNavigate={setScreen}>
-      {screen === 'home' && firstRun && (
-        <SetupWizard initial={settings} registry={pluginAgents} firstRun onSave={handleSave} />
-      )}
+    <Layout screen={screen} onNavigate={navigate}>
+      {screen === 'home' && firstRun && <SetupWizard initial={settings} registry={pluginAgents} firstRun onSave={handleSave} />}
       {screen === 'home' && !firstRun && (
-        <div className="space-y-4">
-          <CheckInScreen
-            provider={provider}
-            strategy={strategy}
-            timeoutMs={config.timeoutMs}
-            onStartWalk={() => setWalkNotice(true)}
-          />
-          {walkNotice && <p className="muted">The walk timer arrives in a later step. Go anyway!</p>}
-        </div>
+        <CheckInScreen
+          key={checkInKey}
+          provider={provider}
+          strategy={strategy}
+          timeoutMs={config.timeoutMs}
+          onStartWalk={setWalkEntry}
+        />
       )}
-      {screen === 'history' && <p className="muted">Your history will show up here.</p>}
-      {screen === 'settings' && (
-        <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />
-      )}
+      {screen === 'history' && <HistoryScreen onDataDeleted={() => setSettings(defaultSettings())} />}
+      {screen === 'settings' && <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />}
     </Layout>
   );
 }

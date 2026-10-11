@@ -1,10 +1,11 @@
 import { SUPPORT_MESSAGE } from '../lib/safety';
 
 interface RiskCardProps {
+  trigger: 'keyword' | 'model';
   onDone: () => void;
 }
 
-export function RiskCard({ onDone }: RiskCardProps) {
+export function RiskCard({ trigger, onDone }: RiskCardProps) {
   return (
     <section className="space-y-4" aria-labelledby="risk-heading" role="alert">
       <div className="card space-y-3">
@@ -24,6 +25,12 @@ export function RiskCard({ onDone }: RiskCardProps) {
           Call Tele-MANAS (14416)
         </a>
       </div>
+      {trigger === 'model' && (
+        <p className="muted">
+          Your model flagged this check-in. Small models are sometimes overly cautious; if this doesn't fit how you feel, that's
+          okay, and you can check in again any time.
+        </p>
+      )}
       <p className="muted">Only a mood score and a marker were saved for this check-in. Your words were not stored.</p>
       <button type="button" className="btn-secondary" onClick={onDone}>
         Back to start

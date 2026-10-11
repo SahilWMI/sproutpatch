@@ -14,7 +14,7 @@ type Step =
   | { kind: 'compose' }
   | { kind: 'thinking' }
   | { kind: 'result'; entry: CheckInEntry; result: Extract<CheckInFlowResult, { kind: 'ok' }> }
-  | { kind: 'risk' }
+  | { kind: 'risk'; trigger: 'keyword' | 'model' }
   | { kind: 'skipped' };
 
 interface CheckInScreenProps {
@@ -64,8 +64,8 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
       setSaveError("Couldn't save this check-in on this device. Everything else still works.");
     }
 
-    if (result.kind === 'risk' || entry.kind === 'risk') setStep({ kind: 'risk' });
-    else setStep({ kind: 'result', entry, result });
+    if (result.kind === 'risk') setStep({ kind: 'risk', trigger: result.trigger });
+    else if (entry.kind === 'checkin') setStep({ kind: 'result', entry, result });
   }
 
   const reset = () => setStep({ kind: 'compose' });
@@ -90,7 +90,7 @@ export function CheckInScreen({ provider, strategy, timeoutMs, onStartWalk }: Ch
           onSkip={() => setStep({ kind: 'skipped' })}
         />
       )}
-      {step.kind === 'risk' && <RiskCard onDone={reset} />}
+      {step.kind === 'risk' && <RiskCard trigger={step.trigger} onDone={reset} />}
       {step.kind === 'skipped' && (
         <div className="card space-y-3 text-center">
           <p className="text-stone-700 dark:text-stone-200">No problem. Your check-in is saved.</p>
