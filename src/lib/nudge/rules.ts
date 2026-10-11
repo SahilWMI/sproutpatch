@@ -38,7 +38,7 @@ export function walkMinutesForMood(moodScore: number): number {
   return 60;
 }
 
-/** Shorter ladder for heat and darkness that still follows mood: 10, 15, 20, 25 or 30 minutes. */
+/** Shorter ladder for midday heat that still follows mood: 10, 15, 20, 25 or 30 minutes. */
 export function shortWalkMinutesForMood(moodScore: number): number {
   const mood = Math.round(moodScore);
   if (mood <= -2) return 10;
@@ -48,10 +48,10 @@ export function shortWalkMinutesForMood(moodScore: number): number {
   return SHORT_WALK_CAP_MINUTES;
 }
 
-/** Rain is a fixed doorstep break; heat and darkness keep the walk shorter; otherwise mood decides. */
+/** Rain is a fixed doorstep break; heat keeps the walk shorter; otherwise, night included, mood decides. */
 export function minutesForRule(rule: NudgeRuleId, moodScore: number): number {
   if (rule === 'rain') return RAIN_MINUTES;
-  if (rule === 'heat' || rule === 'dark') return shortWalkMinutesForMood(moodScore);
+  if (rule === 'heat') return shortWalkMinutesForMood(moodScore);
   return walkMinutesForMood(moodScore);
 }
 

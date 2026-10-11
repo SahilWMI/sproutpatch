@@ -140,12 +140,16 @@ describe('walk length', () => {
     expect(minutesForRule('rain', -3)).toBe(5);
   });
 
-  it('heat and dark use a shorter ladder that still follows mood', () => {
+  it('heat uses a shorter ladder that still follows mood', () => {
     expect([-3, -2, -1, 0, 1, 2, 3].map(shortWalkMinutesForMood)).toEqual([10, 10, 15, 20, 25, 25, 30]);
     expect(minutesForRule('heat', 3)).toBe(30);
-    expect(minutesForRule('dark', 0)).toBe(20);
+    expect(minutesForRule('heat', 0)).toBe(20);
+  });
+
+  it('at night mood decides the full length', () => {
+    expect(minutesForRule('dark', 0)).toBe(30);
     expect(minutesForRule('dark', -3)).toBe(10);
-    expect(suggestByRules({ moodScore: 3, weather: weather(), now: today(21, 0), seed: 0 })).toMatchObject({ rule: 'dark', minutes: 30 });
+    expect(suggestByRules({ moodScore: 3, weather: weather(), now: today(21, 0), seed: 0 })).toMatchObject({ rule: 'dark', minutes: 60 });
     expect(suggestByRules({ moodScore: -2, weather: weather(), now: today(21, 0), seed: 0 })).toMatchObject({ rule: 'dark', minutes: 10 });
   });
 });
