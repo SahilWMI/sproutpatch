@@ -81,6 +81,20 @@ export function PreferencesPanel({ prefs, onChange }: PreferencesPanelProps) {
         </div>
         <p className="muted text-xs">Gentle piano generated in your browser, in the spirit of Minecraft's calm music. No audio files, nothing downloaded.</p>
       </div>
+
+      <div className="space-y-1">
+        <label className="flex min-h-11 items-center justify-between gap-3">
+          <span className="label mb-0">Night crickets</span>
+          <input
+            type="checkbox"
+            role="switch"
+            className="h-6 w-6 accent-sprout-600"
+            checked={prefs.nightSounds}
+            onChange={(e) => onChange({ ...prefs, nightSounds: e.target.checked })}
+          />
+        </label>
+        <p className="muted text-xs">Summer-night crickets from 18:30 to 6:30, on their own or under the music. Uses the same volume.</p>
+      </div>
     </section>
   );
 }

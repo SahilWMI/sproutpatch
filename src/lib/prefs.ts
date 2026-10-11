@@ -12,11 +12,12 @@ const PrefsSchema = z.object({
   musicOn: z.boolean(),
   track: z.enum(TRACK_IDS),
   volume: z.number().min(0).max(1),
+  nightSounds: z.boolean(),
 });
 
 export type Prefs = z.infer<typeof PrefsSchema>;
 
-export const DEFAULT_PREFS: Prefs = { theme: 'auto', musicOn: false, track: 'meadow', volume: 0.5 };
+export const DEFAULT_PREFS: Prefs = { theme: 'auto', musicOn: false, track: 'meadow', volume: 0.5, nightSounds: true };
 const PREFS_KEY = 'prefs';
 
 export function normalizePrefs(stored: unknown): Prefs {
@@ -41,11 +42,16 @@ export async function savePrefs(prefs: Prefs): Promise<void> {
   }
 }
 
-/** Auto: light baby blue from 6:30 to 18:30 local time, dark navy otherwise. */
+/** Night is 18:30 to 6:30 local time. Drives the auto theme and the cricket sounds. */
+export function isNightTime(now: Date): boolean {
+  const minutes = now.getHours() * 60 + now.getMinutes();
+  return minutes < 6 * 60 + 30 || minutes >= 18 * 60 + 30;
+}
+
+/** Auto: light baby blue by day, dark navy at night. */
 export function resolveTheme(mode: ThemeMode, now: Date): 'light' | 'dark' {
   if (mode !== 'auto') return mode;
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  return minutes >= 6 * 60 + 30 && minutes < 18 * 60 + 30 ? 'light' : 'dark';
+  return isNightTime(now) ? 'dark' : 'light';
 }
 
 export function nextThemeMode(mode: ThemeMode): ThemeMode {
