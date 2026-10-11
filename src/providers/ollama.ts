@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import type { Provider } from '../lib/types';
 import { defaultFetch, readError, trimSlash, type FetchLike } from './http';
-import { listOllamaModels } from './tags';
+import { listOllamaModels, OLLAMA_PROXY_BASE, resolvedOllamaBase } from './tags';
 
-export const OLLAMA_PROXY_BASE = '/ollama';
+export { OLLAMA_PROXY_BASE };
 
 export interface OllamaOptions {
   model: string;
@@ -16,14 +16,14 @@ const ChatResponseSchema = z.object({
   message: z.object({ content: z.string() }),
 });
 
-export function createOllamaProvider({ model, baseUrl = OLLAMA_PROXY_BASE, fetchImpl = defaultFetch }: OllamaOptions): Provider {
-  const base = trimSlash(baseUrl) || OLLAMA_PROXY_BASE;
+export function createOllamaProvider({ model, baseUrl, fetchImpl = defaultFetch }: OllamaOptions): Provider {
+  const resolveBase = () => trimSlash(baseUrl ?? resolvedOllamaBase()) || OLLAMA_PROXY_BASE;
   return {
     id: 'ollama',
     label: model ? `Ollama · ${model}` : 'Ollama',
     async checkIn(_note, ctx) {
       if (!model) throw new Error('No Ollama model selected.');
-      const res = await fetchImpl(`${base}/api/chat`, {
+      const res = await fetchImpl(`${resolveBase()}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -41,7 +41,7 @@ export function createOllamaProvider({ model, baseUrl = OLLAMA_PROXY_BASE, fetch
       return { raw: parsed.success ? parsed.data.message.content : null };
     },
     async healthCheck() {
-      const tags = await listOllamaModels(base, fetchImpl);
+      const tags = await listOllamaModels(resolveBase(), fetchImpl);
       if (!tags.ok) return { ok: false, message: "Can't reach Ollama. Is `ollama serve` running?" };
       if (!model) return { ok: false, message: 'Pick a model first.' };
       if (!tags.models.some((m) => m.name === model || m.name === `${model}:latest`)) {

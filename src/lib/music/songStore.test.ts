@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { isGeneratedTrack, normalizePrefs } from '../prefs';
+import { wrapIndex } from './customPlayer';
 import { isAudioFile, shuffled, songTitle } from './songStore';
 import { trackTitle } from './soundtrack';
 
@@ -25,6 +26,12 @@ describe('my music', () => {
     const out = shuffled(items, rand);
     expect([...out].sort()).toEqual(items);
     expect(items).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
+
+  it('wraps to the previous song, including from the first back to the last', () => {
+    expect(wrapIndex(2, 1, 3)).toBe(0);
+    expect(wrapIndex(0, -1, 3)).toBe(2);
+    expect(wrapIndex(1, -1, 3)).toBe(0);
   });
 
   it('has a "My music" track that is not generated', () => {

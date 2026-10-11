@@ -64,7 +64,50 @@ export type TagsResult =
   | { ok: true; models: InstalledModel[] }
   | { ok: false; reason: 'unreachable' | 'bad-response'; message: string };
 
-export async function listOllamaModels(baseUrl = '/ollama', fetchImpl: FetchLike = defaultFetch, signal?: AbortSignal): Promise<TagsResult> {
+export const OLLAMA_PROXY_BASE = '/ollama';
+export const OLLAMA_DIRECT_BASES = ['http://127.0.0.1:11434', 'http://localhost:11434'] as const;
+
+/** Proxy first (dev/preview), then the daemon on this machine (hosted page or a down proxy). */
+export function ollamaCandidates(): string[] {
+  return [OLLAMA_PROXY_BASE, ...OLLAMA_DIRECT_BASES];
+}
+
+let resolvedBase: string | null = null;
+
+/** Last base that answered like Ollama, or the proxy path if none has yet. */
+export function resolvedOllamaBase(): string {
+  return resolvedBase ?? OLLAMA_PROXY_BASE;
+}
+
+export function rememberOllamaBase(base: string | null): void {
+  resolvedBase = base === null ? null : trimSlash(base) || OLLAMA_PROXY_BASE;
+}
+
+/** Tries the proxy, then localhost. Same result shape as listOllamaModels. */
+export async function discoverOllamaModels(fetchImpl: FetchLike = defaultFetch, signal?: AbortSignal): Promise<TagsResult> {
+  let blocked = false;
+  let last: TagsResult | null = null;
+  for (const base of ollamaCandidates()) {
+    const result = await listOllamaModels(base, fetchImpl, signal);
+    if (result.ok) {
+      rememberOllamaBase(base);
+      return result;
+    }
+    last = result;
+    if (/\b403\b|forbidden/i.test(result.message)) blocked = true;
+  }
+  if (blocked) {
+    return {
+      ok: false,
+      reason: 'unreachable',
+      message:
+        'Ollama is on this computer, but it is blocking this page. Open http://localhost:5173 (`npm run dev`), or set OLLAMA_ORIGINS=* and restart Ollama.',
+    };
+  }
+  return last ?? { ok: false, reason: 'unreachable', message: "Can't reach Ollama." };
+}
+
+export async function listOllamaModels(baseUrl = OLLAMA_PROXY_BASE, fetchImpl: FetchLike = defaultFetch, signal?: AbortSignal): Promise<TagsResult> {
   let res: Response;
   try {
     res = await fetchImpl(`${trimSlash(baseUrl)}/api/tags`, { signal });

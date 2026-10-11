@@ -10,6 +10,7 @@ import { SproutIcon } from './components/SproutIcon';
 import { WalkFlow } from './components/WalkFlow';
 import { config } from './lib/config';
 import type { CheckInEntry } from './lib/entries';
+import { installTapFeedback } from './lib/haptics';
 import { setMasterVolume, unlockAudio } from './lib/music/audio';
 import { customMusic } from './lib/music/customPlayer';
 import { playTrack, stopAllMusic } from './lib/music/soundtrack';
@@ -59,9 +60,11 @@ export default function App() {
     };
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('keydown', unlock);
+    const stopHaptics = installTapFeedback();
     return () => {
       window.removeEventListener('pointerdown', unlock);
       window.removeEventListener('keydown', unlock);
+      stopHaptics();
     };
   }, []);
 
@@ -139,8 +142,8 @@ export default function App() {
       {screen === 'history' && <HistoryScreen onDataDeleted={() => setSettings(defaultSettings())} />}
       {screen === 'settings' && (
         <>
-          <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />
           <PreferencesPanel prefs={prefs} onChange={updatePrefs} />
+          <SetupWizard initial={settings} registry={pluginAgents} firstRun={false} onSave={handleSave} />
         </>
       )}
     </Layout>

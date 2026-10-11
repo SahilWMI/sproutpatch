@@ -6,7 +6,7 @@ import { validateModelOutput } from '../lib/runCheckIn';
 import { availableStrategies, resolveProvider, type AppSettings } from '../lib/settings';
 import { withTimeout, TimeoutError, CancelledError } from '../lib/withTimeout';
 import { isLocalUrl } from '../providers/http';
-import { formatSize, isGemma, listOllamaModels, pickDefaultModel, type InstalledModel } from '../providers/tags';
+import { discoverOllamaModels, formatSize, isGemma, pickDefaultModel, type InstalledModel } from '../providers/tags';
 import { ON_DEVICE_PROVIDER_ID } from '../providers/onDevice/onDevice';
 import { OnDeviceModelSection } from './OnDeviceModelSection';
 import { SproutIcon } from './SproutIcon';
@@ -61,12 +61,8 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
   };
 
   const checkOllama = useCallback(async () => {
-    if (config.hosted) {
-      setTags({ status: 'error', message: 'Ollama is only reachable when Sproutpatch runs on your own computer.' });
-      return;
-    }
     setTags({ status: 'loading' });
-    const result = await listOllamaModels();
+    const result = await discoverOllamaModels();
     if (result.ok) {
       setTags({ status: 'ok', models: result.models });
       setDraft((d) =>
@@ -156,8 +152,9 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
       {config.hosted && (
         <p className="rounded-xl bg-mist-100 p-3 text-sm text-mist-700 dark:bg-mist-800 dark:text-mist-200" role="note">
           You're on the hosted version, which starts without a model: mood comes from a keyword estimate and nudges from
-          the weather rules. To use Gemma here, pick "Gemma on this device" below. Ollama only works when Sproutpatch runs
-          on your own computer (<Code>npm run dev</Code>).
+          the weather rules. On this computer, pick "Ollama (local)" and press Check again — it will try the Ollama app
+          on this PC. If that is blocked, run <Code>npm run dev</Code> and open the local address, or pick "Gemma on this
+          device".
         </p>
       )}
 
@@ -213,6 +210,7 @@ export function SetupWizard({ initial, registry, firstRun, onSave }: SetupWizard
           {tags.status === 'error' && (
             <div className="space-y-3 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-300/10 dark:text-amber-100" role="status">
               <p className="font-medium">Can't reach Ollama yet.</p>
+              {tags.message && <p>{tags.message}</p>}
               <ol className="list-decimal space-y-1.5 pl-5">
                 <li>
                   Install Ollama from <a className="underline" href="https://ollama.com/download" target="_blank" rel="noreferrer">ollama.com</a> if you haven't.
