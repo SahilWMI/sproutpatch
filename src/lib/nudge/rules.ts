@@ -43,7 +43,7 @@ export const VARIANTS: Record<NudgeRuleId, readonly [Variant, Variant, Variant]>
     { suggestion: 'Skip the midday heat: a slow ten minutes in the shade now, or a short loop after sunset.', minutes: 10 },
   ],
   dark: [
-    { suggestion: 'Light is nearly gone. Take a short walk on a well-lit street, or do a stretch on the balcony.', minutes: 10 },
+    { suggestion: "It's dark, or close to it. Take a short walk on a well-lit street, or do a stretch on the balcony.", minutes: 10 },
     { suggestion: 'Ten easy minutes along a lit street, or a balcony stretch if you would rather stay close.', minutes: 10 },
     { suggestion: 'Stick to the streetlights: a short loop nearby, or step onto the balcony and stretch.', minutes: 10 },
   ],

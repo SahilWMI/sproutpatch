@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { entryFromResult } from './entries';
+import { MOOD_AFTER_OPTIONS, entryFromResult } from './entries';
+
+describe('mood-after picker', () => {
+  it('has 5 options spanning the same -3..3 scale as mood before', () => {
+    expect(MOOD_AFTER_OPTIONS).toHaveLength(5);
+    expect(MOOD_AFTER_OPTIONS[0].value).toBe(-3);
+    expect(MOOD_AFTER_OPTIONS[4].value).toBe(3);
+  });
+});
 
 const NOW = new Date('2026-10-12T10:00:00Z');
 
