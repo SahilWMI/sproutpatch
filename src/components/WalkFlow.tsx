@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { saveEntry } from '../lib/db';
-import { MOOD_AFTER_OPTIONS, type CheckInEntry } from '../lib/entries';
+import { MOOD_AFTER_OPTIONS, afterWalkMessage, type CheckInEntry } from '../lib/entries';
 import { MusicToggle } from './QuickToggles';
 import { SproutIcon } from './SproutIcon';
 
@@ -29,6 +29,7 @@ export function WalkFlow({ entry, musicOn, onToggleMusic, onExit }: WalkFlowProp
   const [phase, setPhase] = useState<Phase>('walking');
   const [endedAt, setEndedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
+  const [closing, setClosing] = useState('');
   const backRef = useRef<HTMLButtonElement>(null);
 
   const remaining = endAt - now;
@@ -73,6 +74,7 @@ export function WalkFlow({ entry, musicOn, onToggleMusic, onExit }: WalkFlowProp
     } catch {
       setSaveError(true);
     }
+    setClosing(afterWalkMessage(entry.moodBefore, value, new Date()));
     setPhase('done');
   }
 
@@ -134,7 +136,7 @@ export function WalkFlow({ entry, musicOn, onToggleMusic, onExit }: WalkFlowProp
         <div className="flex flex-col items-center gap-6">
           <SproutIcon className="animate-sprout h-16 w-16 text-sprout-500" title="A new sprout" />
           <p className="max-w-sm text-lg text-mist-200" role="status">
-            Nice. Screen's closed, go enjoy the rest of the day.
+            {closing}
           </p>
           {saveError && <p className="text-xs text-amber-400">This walk couldn't be saved on this device.</p>}
           <button type="button" onClick={onExit} className="text-xs text-mist-600 underline hover:text-mist-400">

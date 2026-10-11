@@ -1,8 +1,9 @@
 import { useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { MOOD_AFTER_OPTIONS } from '../lib/entries';
 
 interface ComposerProps {
   busy?: boolean;
-  onSubmit: (note: string) => void;
+  onSubmit: (note: string, mood: number | null) => void;
 }
 
 export const MAX_NOTE_LENGTH = 2000;
@@ -11,8 +12,11 @@ const MAX_TEXTAREA_PX = 160;
 /** Chat-style input pinned to the bottom of the check-in screen. */
 export function Composer({ busy = false, onSubmit }: ComposerProps) {
   const [note, setNote] = useState('');
+  const [mood, setMood] = useState<number | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
   const trimmed = note.trim();
+  const picked = MOOD_AFTER_OPTIONS.find((o) => o.value === mood);
+  const canSend = (trimmed !== '' || picked !== undefined) && !busy;
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -23,8 +27,8 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
 
   function submit(event: FormEvent | KeyboardEvent<HTMLTextAreaElement>) {
     event.preventDefault();
-    if (!trimmed || busy) return;
-    onSubmit(trimmed);
+    if (!canSend) return;
+    onSubmit(trimmed || `Feeling ${picked?.label.toLowerCase() ?? 'okay'}.`, mood);
   }
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -36,6 +40,33 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-2xl space-y-2">
+      <div className="flex items-center justify-center gap-1.5" role="radiogroup" aria-label="How are you feeling? Optional">
+        <span className="mr-1 text-sm text-mist-700 dark:text-mist-300" aria-hidden="true">
+          Mood
+        </span>
+        {MOOD_AFTER_OPTIONS.map((opt) => {
+          const selected = opt.value === mood;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              aria-label={opt.label}
+              title={opt.label}
+              disabled={busy}
+              onClick={() => setMood(selected ? null : opt.value)}
+              className={`flex h-11 w-11 items-center justify-center rounded-full border text-2xl transition-colors ${
+                selected
+                  ? 'border-sprout-600 bg-sprout-100 dark:border-sprout-400 dark:bg-sprout-900/60'
+                  : 'border-transparent hover:bg-mist-200 dark:hover:bg-mist-800'
+              }`}
+            >
+              <span aria-hidden="true">{opt.emoji}</span>
+            </button>
+          );
+        })}
+      </div>
       <div className="flex items-end gap-2 rounded-3xl border border-mist-500 bg-mist-50 p-1.5 pl-4 shadow-lg shadow-mist-900/5 focus-within:border-sprout-500 dark:border-mist-700 dark:bg-mist-900 dark:shadow-black/30">
         <label htmlFor="note" className="sr-only">
           How's today going?
@@ -54,7 +85,7 @@ export function Composer({ busy = false, onSubmit }: ComposerProps) {
         />
         <button
           type="submit"
-          disabled={!trimmed || busy}
+          disabled={!canSend}
           aria-label="Send"
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sprout-600 text-white transition-colors hover:bg-sprout-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-sprout-500 dark:text-sprout-950 dark:hover:bg-sprout-400"
         >

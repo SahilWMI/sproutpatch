@@ -138,6 +138,38 @@ describe('performCheckIn (normal path)', () => {
   });
 });
 
+describe('mood source', () => {
+  const run = (note: string, extra: { moodOverride?: number; recentMood?: number } = {}) =>
+    performCheckIn({ ...base, note, provider: null, strategy: rulesStrategy, getWeather: async () => WEATHER, ...extra });
+
+  it('a picked mood beats the text and sets both the walk and the reply', async () => {
+    const happy = await run('Went to the shop.', { moodOverride: 3 });
+    const rough = await run('Went to the shop.', { moodOverride: -3 });
+    if (happy.kind !== 'ok' || rough.kind !== 'ok') throw new Error('expected ok');
+    expect(happy.moodScore).toBe(3);
+    expect(happy.nudge.minutes).toBe(60);
+    expect(rough.nudge.minutes).toBe(10);
+    expect(happy.reply).not.toBe(rough.reply);
+  });
+
+  it('a picked mood never skips the safety check', async () => {
+    const result = await run('I want to kill myself', { moodOverride: 3 });
+    expect(result.kind).toBe('risk');
+  });
+
+  it('a recent post-walk mood fills in when the note has no mood words', async () => {
+    const result = await run('Went to the shop.', { recentMood: -3 });
+    if (result.kind !== 'ok') throw new Error('expected ok');
+    expect(result.moodScore).toBe(-3);
+  });
+
+  it('the note wins over the recent post-walk mood when it has mood words', async () => {
+    const result = await run('Feeling great today!', { recentMood: -3 });
+    if (result.kind !== 'ok') throw new Error('expected ok');
+    expect(result.moodScore).toBeGreaterThan(0);
+  });
+});
+
 describe('safeSuggest', () => {
   const input: NudgeInput = { moodScore: 0, weather: WEATHER, now: NOW, seed: 0, provider: null };
 
