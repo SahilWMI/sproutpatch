@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sproutpatch — talk</title>
+    <style>
+      :root {
+        --mist-50: #e8f2fc;
+        --mist-100: #d5e7f8;
+        --mist-200: #bcd6f0;
+        --mist-700: #314b6c;
+        --mist-800: #203658;
+        --mist-900: #172b4c;
+        --mist-950: #0f2140;
+        --sprout-300: #9cc495;
+        --sprout-400: #73a86c;
+        --sprout-600: #3f7d4e;
+        --sprout-700: #33613c;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: var(--mist-950);
+        color: var(--mist-50);
+        font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+        word-spacing: 0.06em;
+      }
+      .deck { height: 100%; overflow: hidden; }
+      .slide {
+        display: none;
+        height: 100%;
+        padding: clamp(1.5rem, 5vw, 4rem);
+        flex-direction: column;
+        justify-content: center;
+        gap: 1.1rem;
+        background:
+          radial-gradient(1200px 600px at 10% -10%, #203658 0%, transparent 55%),
+          var(--mist-950);
+      }
+      .slide.active { display: flex; }
+      .slide.center { text-align: center; align-items: center; }
+      .kicker {
+        color: var(--sprout-300);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 6vw, 4.2rem);
+        line-height: 1.05;
+        max-width: 16ch;
+      }
+      h2 {
+        margin: 0;
+        font-size: clamp(1.7rem, 4.5vw, 3rem);
+        line-height: 1.15;
+      }
+      p, li { font-size: clamp(1.05rem, 2.2vw, 1.45rem); line-height: 1.45; }
+      p { margin: 0; max-width: 42rem; color: var(--mist-100); }
+      ul { margin: 0; padding-left: 1.2rem; max-width: 46rem; }
+      li { margin: 0.35rem 0; }
+      .logo { width: 72px; height: 72px; }
+      .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.8rem;
+        width: min(100%, 1100px);
+      }
+      .card {
+        background: #172b4c;
+        border: 1px solid #314b6c;
+        border-radius: 1rem;
+        padding: 1rem 1.1rem;
+      }
+      .card strong { display: block; color: var(--sprout-300); margin-bottom: 0.35rem; }
+      .card span { color: var(--mist-100); font-size: 1.05rem; }
+      .shot {
+        width: min(280px, 28vw);
+        border-radius: 1.2rem;
+        border: 1px solid #314b6c;
+        background: #0f2140;
+      }
+      .shots { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+      a { color: var(--sprout-300); }
+      .foot {
+        position: fixed;
+        left: 1.2rem;
+        right: 1.2rem;
+        bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        color: #7ea4cb;
+        font-size: 0.9rem;
+      }
+      button.nav {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #98bde3;
+        font: inherit;
+        cursor: pointer;
+      }
+      .bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 4px;
+        background: #203658;
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        background: var(--sprout-400);
+        width: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar"><i id="bar"></i></div>
+    <main class="deck" id="deck">
+      <section class="slide center active">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 29V15" stroke="#8cc58a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M16 17c0-6-4-9-10-9 0 6 4 9 10 9z" fill="#6aa96f"/>
+          <path d="M16 14c0-5 3.5-8 9-8 0 5-3.5 8-9 8z" fill="#8cc58a"/>
+        </svg>
+        <p class="kicker">Sproutpatch</p>
+        <h1>You say how you feel. It makes you touch grass.</h1>
+        <p>A local-first daily check-in. Gemma talks. TypeScript sends you outside.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">The problem</p>
+        <h2>Most “how are you” apps keep you on the screen.</h2>
+        <ul>
+          <li>They chat. They store your words on a server.</li>
+          <li>“Go outside” is a generic line that ignores rain, heat, and sunset.</li>
+          <li>A check-in should end in a walk, not another conversation.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">The idea</p>
+        <h2>The screen is the shortest part.</h2>
+        <div class="cards">
+          <div class="card"><strong>1. Check in</strong><span>A few lines, or tap a mood.</span></div>
+          <div class="card"><strong>2. Short reply</strong><span>Your local model writes one or two sentences.</span></div>
+          <div class="card"><strong>3. One walk</strong><span>Code picks where and how long, from real weather.</span></div>
+          <div class="card"><strong>4. Timer, then I'm back</strong><span>A sprout in History for every walk you finish.</span></div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Demo</p>
+        <h2>Write a note. Start a walk.</h2>
+        <div class="shots">
+          <img class="shot" alt="Check-in in light mode" src="https://raw.githubusercontent.com/SahilWMI/sproutpatch/docs/article-shots/docs/shots/01-check-in-light.jpg" />
+          <img class="shot" alt="Walk nudge after check-in" src="https://raw.githubusercontent.com/SahilWMI/sproutpatch/docs/article-shots/docs/shots/03-nudge.jpg" />
+          <img class="shot" alt="Dim walk timer" src="https://raw.githubusercontent.com/SahilWMI/sproutpatch/docs/article-shots/docs/shots/04-walk-timer.jpg" />
+        </div>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">The contract</p>
+        <h2>Gemma may talk. Code decides the rest.</h2>
+        <p>The model only returns JSON: a reply, a mood score, themes, and a risk flag. It can raise the alarm. It can never pick the weather, the walk, or the length.</p>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Safety</p>
+        <h2>The keyword check runs first.</h2>
+        <ul>
+          <li>Before Ollama. Before the on-device model. Before any plugin.</li>
+          <li>Risk mode: no model, no nudge, a support card. In India that is Tele-MANAS at 14416.</li>
+          <li>It stores a mood score and a risk marker. Never the text.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Nudges</p>
+        <h2>Real weather. Mood sets the minutes.</h2>
+        <ul>
+          <li>Open-Meteo, no API key. Coordinates rounded to about 1 km.</li>
+          <li>Rain or storms → five minutes at the doorstep.</li>
+          <li>Heat → shorter, shaded. Night → a lit street.</li>
+          <li>Mood still sets the length: 10, 15, 30, 45, or 60 minutes.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Look and sound</p>
+        <h2>Day, night, and your own music.</h2>
+        <ul>
+          <li>Theme follows the clock: light 6:30–18:30, dark after. Or pin it.</li>
+          <li>The grass scene follows too: sun, moon, fireflies.</li>
+          <li>Meadow and Night Grass are generated piano. No audio files shipped.</li>
+          <li>My music: add ogg or mp3, tap a song, it stays on that device.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Bring your own model</p>
+        <h2>Ollama, the phone, or no model at all.</h2>
+        <ul>
+          <li>Any Ollama tag on your computer. Gemma is preferred.</li>
+          <li>Gemma 3 270M in the browser, on the phone GPU, stored in OPFS.</li>
+          <li>Or an OpenAI-compatible server. Continue without a model and it still works.</li>
+        </ul>
+      </section>
+
+      <section class="slide">
+        <p class="kicker">Privacy</p>
+        <h2>The words never leave the machine.</h2>
+        <p>No account. No API keys in the app. Entries live in IndexedDB. Export JSON or delete everything in History. The only network calls are your local model, if you have one, and Open-Meteo.</p>
+      </section>
+
+      <section class="slide center">
+        <p class="kicker">Not a therapist</p>
+        <h2>A check-in that ends in a walk.</h2>
+        <p>
+          Live: <a href="https://sahilwmi.github.io/sproutpatch/">sahilwmi.github.io/sproutpatch</a><br />
+          Code: <a href="https://github.com/SahilWMI/sproutpatch">github.com/SahilWMI/sproutpatch</a>
+        </p>
+        <p><code>ollama pull gemma3:1b</code> · <code>npm install</code> · <code>npm run dev</code></p>
+      </section>
+    </main>
+    <div class="foot">
+      <button class="nav" type="button" id="prev">← Back</button>
+      <span id="pos">1 / 11</span>
+      <button class="nav" type="button" id="next">Next →</button>
+    </div>
+    <script>
+      const slides = [...document.querySelectorAll('.slide')];
+      const bar = document.getElementById('bar');
+      const pos = document.getElementById('pos');
+      let i = 0;
+      function show(n) {
+        i = (n + slides.length) % slides.length;
+        slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+        pos.textContent = `${i + 1} / ${slides.length}`;
+        bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+      }
+      document.getElementById('next').onclick = () => show(i + 1);
+      document.getElementById('prev').onclick = () => show(i - 1);
+      window.addEventListener('keydown', (e) => {
+        if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+        if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+        if (e.key === 'Home') show(0);
+        if (e.key === 'End') show(slides.length - 1);
+      });
+      document.querySelector('.deck').addEventListener('click', (e) => {
+        if (e.target.closest('a, button')) return;
+        show(e.clientX > innerWidth / 2 ? i + 1 : i - 1);
+      });
+      show(0);
+    </script>
+  </body>
+</html>
