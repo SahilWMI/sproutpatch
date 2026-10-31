@@ -134,6 +134,6 @@ Copy `.env.example` to `.env.local`:
 
 Licensed under the [MIT License](LICENSE).
 
-Built during the DEV Hacktoberfest Open-Source AI Challenge Week 1 (Oct 5-11, 2026). Commits after the deadline are listed below:
+Built during the DEV Hacktoberfest Open-Source AI Challenge Week 1.
 
 <!-- none yet -->
